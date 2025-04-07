@@ -1,8 +1,8 @@
 const db = require('../config/db');
 
-const obtenerUsuarioLogeo = ([correo,contrasena], callback)=>{
-    const query='SELECT * FROM usuarios WHERE correo = ? AND contrasena = ?';
-    db.query(query, [correo, contrasena], (error,results)=>{
+const obtenerUsuarioLogeo = ([email,contrasena], callback)=>{
+    const query='SELECT * FROM usuarios WHERE email = ? AND contrasena = ?';
+    db.query(query, [email, contrasena], (error,results)=>{
         if(error) return callback(error);
 
         if (results.length==0){

@@ -1,10 +1,10 @@
 const { obtenerUsuarioLogeo } = require('../models/usuariosModel');
 
 const login = (req, res) => {
-  const { correo, contrasena } = req.body;
+  const { email, contrasena } = req.body;
 
   //Agregar encriptacion a posteriori
-  obtenerUsuarioLogeo([correo, contrasena], (err, usuario) => {
+  obtenerUsuarioLogeo([email, contrasena], (err, usuario) => {
     if (err) return res.status(500).json({ error: 'Error al verificar usuario' });
 
     if (!usuario) {
