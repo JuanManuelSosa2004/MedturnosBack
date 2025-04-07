@@ -1,20 +1,19 @@
-const mysql =require('mysql2')
+const mysql = require('mysql2');
 
-const pool=mysql.createPool({
-    host:'localhost',
-    user:'root',
-    password:'admin',
-    database:'backenddapps'
+// Crear conexión con los datos directamente
+const connection = mysql.createConnection({
+  uri: 'mysql://root:FXgjiWhEHTkNBdzcBUVCfGxHeCZcQGGi@switchback.proxy.rlwy.net:12826/railway',
+});
 
-})
+// Conectar a la base de datos
+connection.connect((err) => {
+  if (err) {
+    console.error('Error conectando a la base de datos: ', err);
+    return;
+  }
+  console.log('Conexión exitosa a la base de datos MySQL');
+});
 
-pool.getConnection((err, connection)=>{
-    if(err){
-        console.error('Error para conectarse a la db', err);
-        return;
-        }
-    console.log('Conexion a la db exitosa a la db')   
+// Exportar la conexión
+module.exports = connection;
 
-})
-
-module.exports=pool;
