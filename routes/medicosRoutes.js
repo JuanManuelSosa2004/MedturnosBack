@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const medicosController = require('../controllers/medicosController');
+const medicosController = require('../controllers/medicosController.js');
 
 
-//router.get('/medicos/:id', medicosController.obtenerMedicoById);
-//router.get('/medicos/especialidad/:especialidad', medicosController.obtenerMedicosByEspecialidad);
-//router.get('/medicos',medicosController.medicos);
+router.get('/medicos/:id', medicosController.obtenerMedicoById);
+router.get('/medicos/especialidad/:especialidad', medicosController.obtenerMedicosByEspecialidad);
+router.get('/medicos',medicosController.medicos);
 
 module.exports = router;
