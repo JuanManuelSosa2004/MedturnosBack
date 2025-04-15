@@ -37,44 +37,40 @@ const registrarUsuario = ([nombre, apellido, email, contrasena], callback) => {
 };
 
 const obtenerDatosAfiliado = (id_usuario, callback) => {
-    const query = `
+  const query = `
       SELECT plan, precio, fecha_fin, id_obra
       FROM afiliado
       WHERE id_usuario = ?
     `;
-    db.query(query, [id_usuario], (err, results) => {
-      if (err) return callback(err);
-      if (results.length === 0) return callback(null, null);
-      callback(null, results[0]);
-    });
-  };
+  db.query(query, [id_usuario], (err, results) => {
+    if (err) return callback(err);
+    if (results.length === 0) return callback(null, null);
+    callback(null, results[0]);
+  });
+};
 
-  const obtenerPerfil = (id_usuario, callback) => {
-    const query = 'SELECT nombre, apellido, email FROM usuarios WHERE id_usuario = ?';
-    db.query(query, [id_usuario], (err, results) => {
-      if (err) return callback(err);
-      if (results.length === 0) return callback(null, null);
-      callback(null, results[0]);
-    });
-  };
+const obtenerPerfil = (id_usuario, callback) => {
+  const query = 'SELECT nombre, apellido, email FROM usuarios WHERE id_usuario = ?';
+  db.query(query, [id_usuario], (err, results) => {
+    if (err) return callback(err);
+    if (results.length === 0) return callback(null, null);
+    callback(null, results[0]);
+  });
+};
 
-  const editarPerfil = (id_usuario, nombre, apellido, callback) => {
-    const query = `
+const editarPerfil = (id_usuario, nombre, apellido, callback) => {
+  const query = `
       UPDATE usuarios
       SET nombre = ?, apellido = ?
       WHERE id_usuario = ?
     `;
-    const params = [nombre, apellido, id_usuario];
-  
-    db.query(query, params, (err, result) => {
-      if (err) return callback(err);
-      callback(null, result);
-    });
-  };
-  
-  
+  const params = [nombre, apellido, id_usuario];
 
-
+  db.query(query, params, (err, result) => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
+};
 
 module.exports = {
   obtenerUsuarioLogeo,
@@ -82,5 +78,5 @@ module.exports = {
   registrarUsuario,
   obtenerDatosAfiliado,
   obtenerPerfil,
-  editarPerfil
+  editarPerfil,
 };

@@ -3,7 +3,6 @@ const router = express.Router();
 
 const usuariosController = require('../controllers/usuariosController');
 
-
 /**
  * @swagger
  * /usuarios/login:
@@ -41,7 +40,7 @@ const usuariosController = require('../controllers/usuariosController');
  *       500:
  *         description: Error al verificar usuario.
  */
-router.post('/login',usuariosController.login);
+router.post('/login', usuariosController.login);
 
 /**
  * @swagger
@@ -76,7 +75,7 @@ router.post('/login',usuariosController.login);
  *       500:
  *         description: Error interno al registrar el usuario.
  */
-router.post('/registro',usuariosController.registro);
+router.post('/registro', usuariosController.registro);
 
 //router.post('/recuperar',usuariosController.recuperar);
 
@@ -198,6 +197,5 @@ router.put('/editarPerfil/:id', usuariosController.editarPerfilController);
 router.get('/datosObraSocial/:id', usuariosController.datosObraSocial);
 
 //router.delete('/borrarCuenta',usuariosController.borrarCuenta); //Requiere token
-
 
 module.exports = router;
