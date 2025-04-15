@@ -29,10 +29,10 @@ const obtenerMedicoPorId = (id, callback) => {
 // 3. Obtener médicos por nombre exacto de especialidad
 const obtenerMedicosPorEspecialidad = (especialidad, callback) => {
   const query = `
-    SELECT p.id_profesional, p.nombre_profesional, p.email, p.ubicacion, e.nombre AS especialidad
+    SELECT p.id_profesional, p.nombre_profesional, p.email, p.ubicacion, e.descripcion AS especialidad
     FROM profesionales p
-    JOIN especialidades e ON p.id_especialidad = e.id_especialidad
-    WHERE e.nombre = ?
+    JOIN especialidad e ON p.id_especialidad = e.id_especialidad
+    WHERE e.descripcion = ?
   `;
   db.query(query, [especialidad], (err, results) => {
     if (err) return callback(err);

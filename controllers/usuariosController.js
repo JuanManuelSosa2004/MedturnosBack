@@ -100,4 +100,4 @@ const editarPerfilController = (req, res) => {
 
 
 
-module.exports={login, registro, datosObraSocial,verPerfil,editarPerfil};
+module.exports={login, registro, datosObraSocial,verPerfil,editarPerfilController};

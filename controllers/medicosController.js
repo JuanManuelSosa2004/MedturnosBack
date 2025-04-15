@@ -42,6 +42,10 @@ const {
         console.error('Error al obtener médicos por especialidad:', err);
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
       }
+      if (!resultados || resultados.length === 0) {
+        return res.status(404).json({ mensaje: 'No se encontraron médicos con esa especialidad' });
+      }
+
   
       res.status(200).json(resultados);
     });
