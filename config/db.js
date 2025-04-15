@@ -6,7 +6,7 @@ const connection = mysql.createConnection({
 });
 
 // Conectar a la base de datos
-connection.connect((err) => {
+connection.connect(err => {
   if (err) {
     console.error('Error conectando a la base de datos: ', err);
     return;
@@ -16,4 +16,3 @@ connection.connect((err) => {
 
 // Exportar la conexión
 module.exports = connection;
-

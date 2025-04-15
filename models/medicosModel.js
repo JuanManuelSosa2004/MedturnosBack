@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 // 1. Obtener todos los médicos
-const obtenerTodosLosMedicos = (callback) => {
+const obtenerTodosLosMedicos = callback => {
   const query = `
     SELECT id_profesional, nombre_profesional, email, ubicacion, id_especialidad
     FROM profesionales
@@ -43,5 +43,5 @@ const obtenerMedicosPorEspecialidad = (especialidad, callback) => {
 module.exports = {
   obtenerTodosLosMedicos,
   obtenerMedicoPorId,
-  obtenerMedicosPorEspecialidad
+  obtenerMedicosPorEspecialidad,
 };

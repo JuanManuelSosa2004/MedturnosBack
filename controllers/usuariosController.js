@@ -1,5 +1,11 @@
-const { obtenerUsuarioLogeo,buscarUsuarioPorEmail,registrarUsuario,obtenerDatosAfiliado,obtenerPerfil,editarPerfil } = require('../models/usuariosModel');
-
+const {
+  obtenerUsuarioLogeo,
+  buscarUsuarioPorEmail,
+  registrarUsuario,
+  obtenerDatosAfiliado,
+  obtenerPerfil,
+  editarPerfil,
+} = require('../models/usuariosModel');
 
 const login = (req, res) => {
   const { email, contrasena } = req.body;
@@ -8,19 +14,17 @@ const login = (req, res) => {
     if (err) return res.status(500).json({ error: 'Error al verificar usuario' });
 
     if (!usuario) {
-        return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-      } else {
-        return res.status(200).json({ mensaje: 'Inicio de sesión exitoso',usuario});
-      }
-    });
+      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+    } else {
+      return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', usuario });
+    }
+  });
 };
-
-
 
 const registro = (req, res) => {
   const { nombre, apellido, email, contrasena } = req.body;
 
-//Si ya existe el mail registrado
+  //Si ya existe el mail registrado
   buscarUsuarioPorEmail(email, (err, usuarioExistente) => {
     if (err) {
       console.error('Error al buscar usuario:', err);
@@ -31,7 +35,7 @@ const registro = (req, res) => {
       return res.status(409).json({ mensaje: 'El email ya está registrado' });
     }
 
-  //Sino
+    //Sino
 
     registrarUsuario([nombre, apellido, email, contrasena], (err, resultado) => {
       if (err) {
@@ -43,7 +47,6 @@ const registro = (req, res) => {
     });
   });
 };
-
 
 const datosObraSocial = (req, res) => {
   const id_usuario = req.params.id;
@@ -97,7 +100,4 @@ const editarPerfilController = (req, res) => {
   });
 };
 
-
-
-
-module.exports={login, registro, datosObraSocial,verPerfil,editarPerfilController};
+module.exports = { login, registro, datosObraSocial, verPerfil, editarPerfilController };

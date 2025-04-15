@@ -132,6 +132,6 @@ router.get('/especialidad/:especialidad', medicosController.obtenerMedicosByEspe
  *                   type: string
  *                   example: Error interno al obtener la lista de médicos
  */
-router.get('/',medicosController.medicos);
+router.get('/', medicosController.medicos);
 
 module.exports = router;
