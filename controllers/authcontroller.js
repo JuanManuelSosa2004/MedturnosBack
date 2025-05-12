@@ -11,34 +11,31 @@ const SECRET_KEY = process.env.JWT_SECRET; // Usamos la clave secreta desde las 
 // Login
 const login = (req, res) => {
   const { email, contrasena } = req.body;
+  console.log('Intentando iniciar sesión con:', { email, contrasena }); // Depuración
 
-  // Verifica las credenciales del usuario
   obtenerUsuarioLogeo([email, contrasena], (err, usuario) => {
     if (err) {
+      console.error('Error al verificar usuario:', err); // Depuración
       return res.status(500).json({ mensaje: 'Error al verificar usuario' });
     }
 
     if (!usuario) {
+      console.log('Credenciales inválidas'); // Depuración
       return res.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
 
-    // Aquí podrías usar bcrypt para comparar contraseñas en lugar de texto claro
-    // bcrypt.compare(contrasena, usuario.contrasena, (err, result) => {
-    //   if (!result) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-    // });
+    console.log('Usuario autenticado:', usuario); // Depuración
 
-    // Genera el JWT
     const token = jwt.sign(
       { id: usuario.id_usuario, email: usuario.email },
       SECRET_KEY,
-      { expiresIn: '1h' } // El token expira en 1 hora
+      { expiresIn: '1h' }
     );
-    console.log;('Token generado:', token.id); // Depuración
-    // Almacena el token en una cookie
+
     res.cookie('token', token, {
-      httpOnly: true, // Evita que el token sea accesible desde JavaScript
-      secure: process.env.NODE_ENV === 'production', // Solo en HTTPS en producción
-      maxAge: 3600000, // 1 hora en milisegundos
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 3600000,
     });
 
     return res.status(200).json({

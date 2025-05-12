@@ -2,17 +2,24 @@ const db = require('../config/db');
 
 // Función para obtener un usuario por email y contraseña (sin encriptación)
 const obtenerUsuarioLogeo = ([email, contrasena], callback) => {
+  console.log('Buscando usuario con email:', email, 'y contraseña:', contrasena); // Depuración
   const query = 'SELECT * FROM usuarios WHERE email = ? AND contrasena = ?';
   
   db.query(query, [email, contrasena], (error, results) => {
-    if (error) return callback(error);
-
-    if (results.length === 0) {
-      return callback(null, false); // No se encontró el usuario
+    if (error) {
+      console.error('Error en la consulta SQL:', error); // Depuración
+      return callback(error);
     }
 
-    console.log('Logeo exitoso, usuario encontrado', results[0]);
-    callback(null, results[0]); // Usuario encontrado
+    console.log('Resultado de la consulta:', results); // Depuración
+
+    if (results.length === 0) {
+      console.log('Usuario no encontrado'); // Depuración
+      return callback(null, false);
+    }
+
+    console.log('Logeo exitoso, usuario encontrado:', results[0]); // Depuración
+    callback(null, results[0]);
   });
 };
 

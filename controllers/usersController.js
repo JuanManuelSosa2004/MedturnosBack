@@ -1,4 +1,4 @@
-const { obtenerPerfil, editarPerfil, eliminarCuenta, obtenerDatosAfiliado } = require('../models/usersModel');
+const { obtenerPerfil, updateUser, eliminarCuenta, obtenerDatosAfiliado } = require('../models/usersModel');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'yourSecretKey';
@@ -30,12 +30,9 @@ const getProfile = (req, res) => {
 const updateProfile = (req, res) => {
   const id_usuario = req.user.id; // Cambiado a `req.user.id`
   const { nombre, apellido, email } = req.body;
+  console.log('Datos para actualizar el perfil:', { nombre, apellido, email }); // Depuración 
 
-  if (!nombre || !apellido || !email) {
-    return res.status(400).json({ mensaje: 'Faltan campos necesarios' });
-  }
-
-  editarPerfil(id_usuario, { nombre, apellido, email }, (err, usuarioActualizado) => {
+  updateUser(id_usuario, { nombre, apellido, email }, (err, usuarioActualizado) => {
     if (err) {
       console.error('Error al actualizar el perfil:', err);
       return res.status(500).json({ mensaje: 'Error interno' });

@@ -1,5 +1,6 @@
 const db = require('../config/db');
 
+
  
 
 const obtenerDatosAfiliado = (id_usuario, callback) => {
@@ -24,19 +25,6 @@ const obtenerPerfil = (id_usuario, callback) => {
   });
 };
 
-const editarPerfil = (id_usuario, { nombre, apellido, email }, callback) => {
-  const query = `
-      UPDATE usuarios
-      SET nombre = ?, apellido = ?, email = ?
-      WHERE id_usuario = ?
-    `;
-  const params = [nombre, apellido, email, id_usuario];
-
-  db.query(query, params, (err, result) => {
-    if (err) return callback(err);
-    callback(null, result);
-  });
-};
 
 const eliminarCuenta = (id_usuario, callback) => {
   const query = 'DELETE FROM usuarios WHERE id_usuario = ?';
@@ -46,9 +34,47 @@ const eliminarCuenta = (id_usuario, callback) => {
   });
 };
 
+const updateUser = (userId, userData, callback) => {
+  const campos = [];
+  const valores = [];
+
+  // Agregar los campos enviados al array de campos y valores
+  if (userData.nombre !== undefined) {
+    campos.push('nombre = ?');
+    valores.push(userData.nombre);
+  }
+  if (userData.apellido !== undefined) {
+    campos.push('apellido = ?');
+    valores.push(userData.apellido);
+  }
+  if (userData.email !== undefined) {
+    campos.push('email = ?');
+    valores.push(userData.email);
+  }
+  if (userData.contrasena !== undefined) {
+    campos.push('contrasena = ?');
+    valores.push(userData.contrasena);
+  }
+
+  // Si no se envió ningún campo, devolver un error
+  if (campos.length === 0) {
+    return callback(new Error('No se enviaron campos para actualizar'));
+  }
+
+  // Construir la consulta SQL
+  const query = `UPDATE usuarios SET ${campos.join(', ')} WHERE id_usuario = ?`;
+  valores.push(userId); // Agregar el ID del usuario al final de los valores
+
+  // Ejecutar la consulta
+  db.query(query, valores, (error, results) => {
+    if (error) return callback(error);
+    callback(null, results);
+  });
+};
+
 module.exports = {
   obtenerDatosAfiliado,
   obtenerPerfil,
-  editarPerfil,
   eliminarCuenta,
+  updateUser,
 };
