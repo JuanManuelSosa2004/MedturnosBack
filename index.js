@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
-//const { swaggerUi, swaggerDocs } = require('./config/swagger');
+const dotenv=require('dotenv').config();
+const cookieParser = require('cookie-parser');
 
+//const { swaggerUi, swaggerDocs } = require('./config/swagger');
+app.use(cookieParser()); 
 app.use(express.json());
 const PORT = 3000;
 

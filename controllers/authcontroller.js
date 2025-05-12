@@ -6,7 +6,7 @@ const {
   registrarUsuario,
 } = require('../models/authModel');
 
-const SECRET_KEY = 'tu_clave_secreta'; // Se recomienda cambiar por una variable de entorno
+const SECRET_KEY = process.env.JWT_SECRET; // Usamos la clave secreta desde las variables de entorno
 
 // Login
 const login = (req, res) => {
@@ -29,14 +29,20 @@ const login = (req, res) => {
 
     // Genera el JWT
     const token = jwt.sign(
-      { id: usuario.id, email: usuario.email },
+      { id: usuario.id_usuario, email: usuario.email },
       SECRET_KEY,
       { expiresIn: '1h' } // El token expira en 1 hora
     );
+    console.log;('Token generado:', token.id); // Depuración
+    // Almacena el token en una cookie
+    res.cookie('token', token, {
+      httpOnly: true, // Evita que el token sea accesible desde JavaScript
+      secure: process.env.NODE_ENV === 'production', // Solo en HTTPS en producción
+      maxAge: 3600000, // 1 hora en milisegundos
+    });
 
     return res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
-      token,
     });
   });
 };

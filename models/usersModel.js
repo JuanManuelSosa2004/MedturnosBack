@@ -1,40 +1,6 @@
 const db = require('../config/db');
 
-const obtenerUsuarioLogeo = ([email, contrasena], callback) => {
-  const query = 'SELECT * FROM usuarios WHERE email = ? AND contrasena = ?';
-  db.query(query, [email, contrasena], (error, results) => {
-    if (error) return callback(error);
-
-    if (results.length === 0) {
-      return callback(null, false);
-    }
-
-    console.log('Logeo exitoso, usuario encontrado', results[0]);
-    callback(null, results[0]);
-  });
-};
-
-const buscarUsuarioPorEmail = (email, callback) => {
-  const query = 'SELECT * FROM usuarios WHERE email = ?';
-  db.query(query, [email], (err, results) => {
-    if (err) return callback(err);
-    if (results.length > 0) return callback(null, results[0]);
-    return callback(null, null);
-  });
-};
-
-const registrarUsuario = ([nombre, apellido, email, contrasena], callback) => {
-  const query = `
-    INSERT INTO usuarios (nombre, apellido, email, contrasena)
-    VALUES (?, ?, ?, ?)
-  `;
-  const params = [nombre, apellido, email, contrasena];
-  
-  db.query(query, params, (error, results) => {
-    if (error) return callback(error);
-    callback(null, results);
-  });
-};
+ 
 
 const obtenerDatosAfiliado = (id_usuario, callback) => {
   const query = `
@@ -81,9 +47,6 @@ const eliminarCuenta = (id_usuario, callback) => {
 };
 
 module.exports = {
-  obtenerUsuarioLogeo,
-  buscarUsuarioPorEmail,
-  registrarUsuario,
   obtenerDatosAfiliado,
   obtenerPerfil,
   editarPerfil,

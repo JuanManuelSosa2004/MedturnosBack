@@ -1,12 +1,16 @@
-const { obtenerPerfil, editarPerfil, eliminarCuenta, obtenerDatosAfiliado } = require('../models/usersModel'); // Aquí importamos los métodos de tu modelo de usuario.
-const jwt = require('jsonwebtoken'); // Por si necesitas trabajar con el JWT en el controlador.
+const { obtenerPerfil, editarPerfil, eliminarCuenta, obtenerDatosAfiliado } = require('../models/usersModel');
+const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = 'yourSecretKey'; // Asegúrate de que sea la misma clave secreta que usas para firmar el JWT.
-
+const JWT_SECRET = process.env.JWT_SECRET || 'yourSecretKey';
 
 // Controlador para obtener el perfil del usuario
 const getProfile = (req, res) => {
-  const id_usuario = req.user.id; // `req.user` estará disponible gracias al middleware JWT
+  console.log('Datos del usuario en req.user:', req.user); // Depuración
+  const id_usuario = req.user?.id;
+
+  if (!id_usuario) {
+    return res.status(400).json({ mensaje: 'No se pudo identificar al usuario' });
+  }
 
   obtenerPerfil(id_usuario, (err, perfil) => {
     if (err) {
@@ -24,10 +28,9 @@ const getProfile = (req, res) => {
 
 // Controlador para actualizar el perfil del usuario
 const updateProfile = (req, res) => {
-  const id_usuario = req.user.id;
+  const id_usuario = req.user.id; // Cambiado a `req.user.id`
   const { nombre, apellido, email } = req.body;
 
-  // Validamos los campos necesarios
   if (!nombre || !apellido || !email) {
     return res.status(400).json({ mensaje: 'Faltan campos necesarios' });
   }
@@ -48,7 +51,7 @@ const updateProfile = (req, res) => {
 
 // Controlador para eliminar la cuenta del usuario
 const deleteAccount = (req, res) => {
-  const id_usuario = req.user.id;
+  const id_usuario = req.user.id; // Cambiado a `req.user.id`
 
   eliminarCuenta(id_usuario, (err) => {
     if (err) {
@@ -62,7 +65,7 @@ const deleteAccount = (req, res) => {
 
 // Controlador para obtener los datos del afiliado (obra social)
 const getAfiliado = (req, res) => {
-  const id_usuario = req.user.id; // Obtener ID del usuario autenticado
+  const id_usuario = req.user.id; // Cambiado a `req.user.id`
 
   obtenerDatosAfiliado(id_usuario, (err, datosAfiliado) => {
     if (err) {
@@ -78,28 +81,9 @@ const getAfiliado = (req, res) => {
   });
 };
 
-// Controlador para obtener la información del usuario desde el token
-const getUserFromToken = (req, res) => {
-  const token = req.header('Authorization')?.replace('Bearer ', ''); // Obtener token del header de la solicitud
-
-  if (!token) {
-    return res.status(403).json({ mensaje: 'Acceso denegado, no se encontró el token' });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ mensaje: 'Token no válido' });
-    }
-
-    // El token es válido, puedes retornar información del usuario
-    res.status(200).json(decoded);
-  });
-};
-
 module.exports = {
   getProfile,
   updateProfile,
   deleteAccount,
   getAfiliado,
-  getUserFromToken
 };
