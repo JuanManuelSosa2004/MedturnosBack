@@ -27,10 +27,17 @@ const obtenerPerfil = (id_usuario, callback) => {
 
 
 const eliminarCuenta = (id_usuario, callback) => {
-  const query = 'DELETE FROM usuarios WHERE id_usuario = ?';
-  db.query(query, [id_usuario], (err, result) => {
+  // Eliminar primero los datos relacionados en la tabla afiliado
+  const queryAfiliado = 'DELETE FROM afiliado WHERE id_usuario = ?';
+  db.query(queryAfiliado, [id_usuario], (err) => {
     if (err) return callback(err);
-    callback(null, result);
+
+    // Luego eliminar al usuario de la tabla usuarios
+    const queryUsuario = 'DELETE FROM usuarios WHERE id_usuario = ?';
+    db.query(queryUsuario, [id_usuario], (err, result) => {
+      if (err) return callback(err);
+      callback(null, result);
+    });
   });
 };
 
