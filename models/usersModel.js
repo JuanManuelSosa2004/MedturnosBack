@@ -29,7 +29,7 @@ const registrarUsuario = ([nombre, apellido, email, contrasena], callback) => {
     VALUES (?, ?, ?, ?)
   `;
   const params = [nombre, apellido, email, contrasena];
-
+  
   db.query(query, params, (error, results) => {
     if (error) return callback(error);
     callback(null, results);
@@ -58,15 +58,23 @@ const obtenerPerfil = (id_usuario, callback) => {
   });
 };
 
-const editarPerfil = (id_usuario, nombre, apellido, callback) => {
+const editarPerfil = (id_usuario, { nombre, apellido, email }, callback) => {
   const query = `
       UPDATE usuarios
-      SET nombre = ?, apellido = ?
+      SET nombre = ?, apellido = ?, email = ?
       WHERE id_usuario = ?
     `;
-  const params = [nombre, apellido, id_usuario];
+  const params = [nombre, apellido, email, id_usuario];
 
   db.query(query, params, (err, result) => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
+};
+
+const eliminarCuenta = (id_usuario, callback) => {
+  const query = 'DELETE FROM usuarios WHERE id_usuario = ?';
+  db.query(query, [id_usuario], (err, result) => {
     if (err) return callback(err);
     callback(null, result);
   });
@@ -79,4 +87,5 @@ module.exports = {
   obtenerDatosAfiliado,
   obtenerPerfil,
   editarPerfil,
+  eliminarCuenta,
 };
