@@ -16,7 +16,7 @@ const PORT = 3000;
 // Rutas de la API
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/usuarios', require('./routes/usersRoutes'));
-//app.use('/medicos', require('./routes/medicosRoutes'));
+app.use('/medicos', require('./routes/medicosRoutes'));
 //app.use('/turnos', require('./routes/turnosRoutes'));
 //app.use('/Historial-Medico', require('./routes/historialMedicos'));
 //app.use('/uploads', require('./routes/upload'));

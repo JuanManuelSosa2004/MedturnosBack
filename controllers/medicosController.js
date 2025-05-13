@@ -6,6 +6,8 @@ const {
 
 // GET /medicos
 const medicos = (req, res) => {
+  console.log('Ejecutando controlador medicos');
+
   obtenerTodosLosMedicos((err, resultado) => {
     if (err) {
       console.error('Error al obtener médicos:', err);
@@ -50,8 +52,12 @@ const obtenerMedicosByEspecialidad = (req, res) => {
   });
 };
 
-module.exports = {
+// Exportar como un objeto llamado medicosController
+const medicosController = {
   medicos,
   obtenerMedicoById,
   obtenerMedicosByEspecialidad,
 };
+
+module.exports = medicosController;
+
