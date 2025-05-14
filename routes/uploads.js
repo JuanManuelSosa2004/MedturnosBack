@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Ruta para subir imágenes
-router.post('/', upload.single('archivo'), UploadsController.uploadFiles);
+router.post('/subir', upload.single('archivo'), UploadsController.uploadFiles);
 
 // Ruta para recuperar imágenes
 router.get('/:id_nota', UploadsController.obtenerImagen);

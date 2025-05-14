@@ -14,7 +14,7 @@ const uploadFiles = (req, res) => {
   try {
     // Lee el archivo subido como binario
     const archivo = fs.readFileSync(req.file.path);
-
+    
     // Consulta SQL para insertar en la tabla `notasmedicas`
     const query = `
       INSERT INTO notasmedicas (id_turno, contenido, imagenes)
