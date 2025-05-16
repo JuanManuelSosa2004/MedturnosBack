@@ -4,7 +4,7 @@ const db = require('../config/db');
 const obtenerUsuarioLogeo = ([email, contrasena], callback) => {
   console.log('Buscando usuario con email:', email, 'y contraseña:', contrasena); // Depuración
   const query = 'SELECT * FROM usuarios WHERE email = ? AND contrasena = ?';
-  
+
   db.query(query, [email, contrasena], (error, results) => {
     if (error) {
       console.error('Error en la consulta SQL:', error); // Depuración
@@ -26,14 +26,14 @@ const obtenerUsuarioLogeo = ([email, contrasena], callback) => {
 // Función para buscar un usuario por email
 const buscarUsuarioPorEmail = (email, callback) => {
   const query = 'SELECT * FROM usuarios WHERE email = ?';
-  
+
   db.query(query, [email], (err, results) => {
     if (err) return callback(err);
-    
+
     if (results.length > 0) {
       return callback(null, results[0]); // Usuario encontrado
     }
-    
+
     return callback(null, null); // No existe el usuario con ese email
   });
 };
@@ -59,7 +59,7 @@ const obtenerDatosAfiliado = (id_usuario, callback) => {
     FROM afiliado
     WHERE id_usuario = ?
   `;
-  
+
   db.query(query, [id_usuario], (err, results) => {
     if (err) return callback(err);
     if (results.length === 0) return callback(null, null); // No se encontró afiliado
@@ -67,9 +67,36 @@ const obtenerDatosAfiliado = (id_usuario, callback) => {
   });
 };
 
+// Guardar el token de reseteo en la base de datos
+const guardarResetToken = (email, token, callback) => {
+  const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos desde ahora
+  const query = 'UPDATE usuarios SET reset_token = ?, reset_token_expiry = ? WHERE email = ?';
+  db.query(query, [token, expiry, email], callback);
+};
+
+// Buscar usuario por token de reseteo
+const buscarUsuarioPorResetToken = (token, callback) => {
+  const now = new Date();
+  const query = 'SELECT * FROM usuarios WHERE reset_token = ? AND reset_token_expiry > ?';
+  db.query(query, [token, now], (err, results) => {
+    if (err) return callback(err);
+    if (results.length === 0) return callback(null, null);
+    callback(null, results[0]);
+  });
+};
+
+// Cambiar la contraseña y limpiar el token
+const cambiarContrasenaConToken = (token, nuevaContrasena, callback) => {
+  const query = 'UPDATE usuarios SET contrasena = ?, reset_token = NULL WHERE reset_token = ?';
+  db.query(query, [nuevaContrasena, token], callback);
+};
+
 module.exports = {
   obtenerUsuarioLogeo,
   buscarUsuarioPorEmail,
   registrarUsuario,
   obtenerDatosAfiliado,
+  guardarResetToken,
+  buscarUsuarioPorResetToken,
+  cambiarContrasenaConToken,
 };
