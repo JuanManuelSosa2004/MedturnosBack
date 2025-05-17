@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const turnosController = require('../controllers/turnosController');
+const TurnosController = require('../controllers/turnos.controller');
+//visualizacion
+router.get('/disponibles', TurnosController.getDisponibles);
+router.get('/disponibles/especialidad/:especialidad', TurnosController.getByEspecialidad);
+router.get('/disponibles/profesional/:profesional_id', TurnosController.getByProfesional);
 
-//router.get('/historialTurnos', turnosController.historialTurnos);
-//router.get('/misTurnos', turnosController.misTurnos);//Los turnos, tanto pasado y futuros
-//router.get('/disponibles', turnosController.obtenerTurnos);
-//router.get('/disponibles/especialidad/:especialidad', turnosController.obtenerTurnosByEspecialidad);
-//router.get('/disponibles/profesional/:profesionalId', turnosController.obtenerTurnosByProfesional);
-//router.post('/', turnosController.reservarTurno);
-//router.post('/:id', turnosController.cancelarTurno);
+//accion
+router.post('/:id/reservar', TurnosController.reservarTurno);
+router.delete('/:id', TurnosController.cancelarTurno);
 
 module.exports = router;
