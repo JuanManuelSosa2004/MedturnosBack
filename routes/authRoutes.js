@@ -10,5 +10,5 @@ router.post('/register', authController.registro); // La función 'register' del
 
 router.post('/forget', authController.solicitarRecuperacion);
 router.post('/reset', authController.resetearContrasena);
-
+//router.post('/logout', authController.logout);
 module.exports = router;

@@ -1,53 +1,50 @@
+const db = require('../config/db');
+
 const getDisponibles = (callback) => {
   const query = `
-    SELECT id_turno, fecha, hora, estado, profesional_id, especialidad
+    SELECT id_turno, fecha, hora, disponibilidad, id_profesional, id_usuario, id_especialidad
     FROM turnos
-    WHERE estado = 'disponible'
+    WHERE disponibilidad = 'disponible'
   `;
-
   db.query(query, (err, resultados) => {
-    if (err) return callback(err);
+    if (err) {
+      console.error('Error en la consulta SQL:', err);
+      return callback(err);
+    }
     callback(null, resultados);
   });
 };
 
-const getByEspecialidad = (especialidad, callback) => {
+const getByEspecialidad = (id_especialidad, callback) => {
   const query = `
-    SELECT id_turno, fecha, hora, estado, profesional_id, especialidad
+    SELECT id_turno, fecha, hora, disponibilidad, id_profesional, id_usuario, id_especialidad
     FROM turnos
-    WHERE estado = 'disponible' AND especialidad = ?
+    WHERE disponibilidad = 'disponible' AND id_especialidad = ?
   `;
-
-  db.query(query, [especialidad], (err, resultados) => {
+  db.query(query, [id_especialidad], (err, resultados) => {
     if (err) return callback(err);
     callback(null, resultados);
   });
 };
 
-const getByProfesional = (profesional_id, callback) => {
+const getByProfesional = (id_profesional, callback) => {
   const query = `
-    SELECT id_turno, fecha, hora, estado, profesional_id, especialidad
+    SELECT id_turno, fecha, hora, disponibilidad, id_profesional, id_usuario, id_especialidad
     FROM turnos
-    WHERE estado = 'disponible' AND profesional_id = ?
+    WHERE disponibilidad = 'disponible' AND id_profesional = ?
   `;
-
-  db.query(query, [profesional_id], (err, resultados) => {
+  db.query(query, [id_profesional], (err, resultados) => {
     if (err) return callback(err);
     callback(null, resultados);
   });
 };
-
-
-
-
 
 const reservarTurno = (turno_id, usuario_id, callback) => {
   const query = `
     UPDATE turnos
-    SET usuario_id = ?, estado = 'reservado'
-    WHERE id_turno = ? AND estado = 'disponible'
+    SET id_usuario = ?, disponibilidad = 'reservado'
+    WHERE id_turno = ? AND disponibilidad = 'disponible'
   `;
-
   db.query(query, [usuario_id, turno_id], (err, resultado) => {
     if (err) return callback(err);
     callback(null, resultado);
@@ -57,10 +54,9 @@ const reservarTurno = (turno_id, usuario_id, callback) => {
 const cancelarTurno = (turno_id, callback) => {
   const query = `
     UPDATE turnos
-    SET usuario_id = NULL, estado = 'disponible'
-    WHERE id_turno = ? AND estado = 'reservado'
+    SET id_usuario = NULL, disponibilidad = 'disponible'
+    WHERE id_turno = ? AND disponibilidad = 'reservado'
   `;
-
   db.query(query, [turno_id], (err, resultado) => {
     if (err) return callback(err);
     callback(null, resultado);

@@ -39,16 +39,28 @@ const buscarUsuarioPorEmail = (email, callback) => {
 };
 
 // Función para registrar un nuevo usuario
-const registrarUsuario = ([nombre, apellido, email, contrasena], callback) => {
-  const query = `
+const registrarUsuario = ([nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra], callback) => {
+  const queryUsuario = `
     INSERT INTO usuarios (nombre, apellido, email, contrasena)
     VALUES (?, ?, ?, ?)
   `;
-  const params = [nombre, apellido, email, contrasena];
+  const paramsUsuario = [nombre, apellido, email, contrasena];
 
-  db.query(query, params, (error, results) => {
+  db.query(queryUsuario, paramsUsuario, (error, results) => {
     if (error) return callback(error);
-    callback(null, results); // Usuario registrado con éxito
+
+    const id_usuario = results.insertId; // ID del usuario recién creado
+
+    const queryAfiliado = `
+      INSERT INTO afiliado (id_usuario, plan, precio, fecha_fin, id_obra)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    const paramsAfiliado = [id_usuario, plan, precio, fecha_fin, id_obra];
+
+    db.query(queryAfiliado, paramsAfiliado, (error2, results2) => {
+      if (error2) return callback(error2);
+      callback(null, { usuario: results, afiliado: results2 });
+    });
   });
 };
 
