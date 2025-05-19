@@ -124,9 +124,15 @@ const resetearContrasena = (req, res) => {
   });
 };
 
+const logout = (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({ mensaje: 'Sesión cerrada correctamente' });
+};
+
 module.exports = {
   login,
   registro,
   solicitarRecuperacion,
   resetearContrasena,
+  logout,
 };
