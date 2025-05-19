@@ -1,7 +1,7 @@
 const { obtenerPerfil, updateUser, eliminarCuenta, obtenerDatosAfiliado } = require('../models/usersModel');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'yourSecretKey';
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 // Controlador para obtener el perfil del usuario
 const getProfile = (req, res) => {
