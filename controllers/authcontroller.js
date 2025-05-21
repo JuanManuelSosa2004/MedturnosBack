@@ -38,24 +38,17 @@ const login = (req, res) => {
       SECRET_KEY,
       { expiresIn: '1h' } // El token expira en 1 hora
     );
-    console.log;
-    'Token generado:', token; // Depuración
-    // Almacena el token en una cookie
-    res.cookie('token', token, {
-      httpOnly: true, // Evita que el token sea accesible desde JavaScript
-      secure: process.env.NODE_ENV === 'production', // Solo en HTTPS en producción
-      maxAge: 3600000, // 1 hora en milisegundos
-    });
 
     return res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
+      token, // <-- Devuelve el token en la respuesta
     });
   });
 };
 
 // Registro
 const registro = (req, res) => {
-  const { nombre, apellido, email, contrasena } = req.body;
+  const { nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra } = req.body;
 
   // Verifica si el email ya está registrado
   buscarUsuarioPorEmail(email, (err, usuarioExistente) => {
@@ -69,7 +62,7 @@ const registro = (req, res) => {
     }
 
     // Si no existe, registrar al usuario
-    registrarUsuario([nombre, apellido, email, contrasena], (err, resultado) => {
+    registrarUsuario([nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra], (err, resultado) => {
       if (err) {
         console.error('Error al registrar usuario:', err);
         return res.status(500).json({ mensaje: 'Error interno al registrar el usuario' });
@@ -125,7 +118,7 @@ const resetearContrasena = (req, res) => {
 };
 
 const logout = (req, res) => {
-  res.clearCookie('token');
+  //El frontend debe eliminar el token del almacenamiento local 
   res.status(200).json({ mensaje: 'Sesión cerrada correctamente' });
 };
 

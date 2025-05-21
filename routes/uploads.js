@@ -19,5 +19,6 @@ router.post('/subir', upload.single('archivo'), UploadsController.uploadFiles);
 
 // Ruta para recuperar imágenes
 router.get('/:id_nota', UploadsController.obtenerImagen);
+router.get('/:id_perfil', UploadsController.obtenerFotoPerfil);
 
 module.exports = router;

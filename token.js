@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'yourSecretKey'; // Asegúrate de definir JWT_SECRET en tu entorno
+const JWT_SECRET = process.env.JWT_SECRET ; // Asegúrate de definir JWT_SECRET en tu entorno
 
 const verificarToken = (req, res, next) => {
   // Obtener el token desde las cookies
-  const token = req.cookies?.token;
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
     return res.status(403).json({ mensaje: 'No se proporcionó token de autenticación' });
