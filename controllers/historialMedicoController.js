@@ -42,6 +42,7 @@ const obtenerNotasMedicasController = (req, res) => {
   if (!id_usuario) return res.status(401).json({ mensaje: 'No autorizado' });
   obtenerNotasMedicas(id_usuario, (err, resultados) => {
     if (err) return res.status(500).json({ mensaje: 'Error interno al obtener las notas médicas.' });
+    // Devuelve array vacío si no hay notas
     res.status(200).json(resultados);
   });
 };
