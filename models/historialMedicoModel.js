@@ -48,12 +48,12 @@ const obtenerTurnosProgramados = (id_usuario, callback) => {
 // Notas médicas del usuario
 const obtenerNotasMedicas = (id_usuario, callback) => {
   const query = `
-    SELECT n.id_nota_medica, n.id_turno, n.fecha, n.nota, p.nombre_profesional AS profesional
-    FROM notas_medicas n
+    SELECT n.id_nota, n.id_turno, n.contenido, n.imagenes, t.fecha, p.nombre_profesional AS profesional
+    FROM notasmedicas n
     JOIN turnos t ON n.id_turno = t.id_turno
     JOIN profesionales p ON t.id_profesional = p.id_profesional
-    WHERE t.id_usuario = ? and t.disponibilidad = 'realizado'
-    ORDER BY n.fecha DESC
+    WHERE t.id_usuario = ?
+    ORDER BY t.fecha DESC
   `;
   db.query(query, [id_usuario], (err, resultados) => {
     if (err) return callback(err);
