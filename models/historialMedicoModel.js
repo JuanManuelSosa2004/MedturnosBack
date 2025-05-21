@@ -52,7 +52,7 @@ const obtenerNotasMedicas = (id_usuario, callback) => {
     FROM notas_medicas n
     JOIN turnos t ON n.id_turno = t.id_turno
     JOIN profesionales p ON t.id_profesional = p.id_profesional
-    WHERE t.id_usuario = ?
+    WHERE t.id_usuario = ? and t.disponibilidad = 'realizado'
     ORDER BY n.fecha DESC
   `;
   db.query(query, [id_usuario], (err, resultados) => {

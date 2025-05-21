@@ -1,5 +1,9 @@
-const db = require('../config/db'); // Conexión a la base de datos
-const fs = require('fs'); // Para manejar archivos
+const fs = require('fs');
+const {
+  guardarArchivoNota,
+  obtenerImagenNota,
+  obtenerPerfilUsuario,
+} = require('../models/uploadsModel');
 
 // Subir archivo
 const uploadFiles = (req, res) => {
@@ -11,42 +15,25 @@ const uploadFiles = (req, res) => {
   // Obtén los datos del cuerpo de la solicitud
   const { id_turno, contenido } = req.body;
 
-  try {
-    // Lee el archivo subido como binario
-    const archivo = fs.readFileSync(req.file.path);
-    
-    // Consulta SQL para insertar en la tabla `notasmedicas`
-    const query = `
-      INSERT INTO notasmedicas (id_turno, contenido, imagenes)
-      VALUES (?, ?, ?)
-    `;
+  guardarArchivoNota(id_turno, contenido, req.file.path, (err, result) => {
+    // Elimina el archivo temporal después de guardarlo
+    fs.unlinkSync(req.file.path);
 
-    // Ejecuta la consulta
-    db.query(query, [id_turno, contenido, archivo], (err, result) => {
-      if (err) {
-        console.error('Error al guardar el archivo en la base de datos:', err);
-        return res.status(500).json({ mensaje: 'Error interno del servidor' });
-      }
+    if (err) {
+      console.error('Error al guardar el archivo en la base de datos:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
 
-      // Elimina el archivo temporal después de guardarlo
-      fs.unlinkSync(req.file.path);
-
-      // Responde con éxito
-      res.status(201).json({ mensaje: 'Archivo subido con éxito', id: result.insertId });
-    });
-  } catch (error) {
-    console.error('Error al procesar el archivo:', error);
-    res.status(500).json({ mensaje: 'Error interno del servidor' });
-  }
+    // Responde con éxito
+    res.status(201).json({ mensaje: 'Archivo subido con éxito', id: result.insertId });
+  });
 };
 
-// Recuperar archivo
+// Recuperar imagen de nota médica
 const obtenerImagen = (req, res) => {
   const { id_nota } = req.params; // Obtén el ID de la nota desde los parámetros de la URL
 
-  const query = 'SELECT imagenes FROM notasmedicas WHERE id_nota = ?';
-
-  db.query(query, [id_nota], (err, results) => {
+  obtenerImagenNota(id_nota, (err, results) => {
     if (err) {
       console.error('Error al recuperar la imagen:', err);
       return res.status(500).json({ mensaje: 'Error interno del servidor' });
@@ -64,4 +51,26 @@ const obtenerImagen = (req, res) => {
   });
 };
 
-module.exports = { uploadFiles, obtenerImagen };
+// Recuperar foto de perfil
+const obtenerFotoPerfil = (req, res) => {
+  const { id_perfil } = req.params; // Obtén el ID del usuario desde los parámetros de la URL
+
+  obtenerPerfilUsuario(id_perfil, (err, results) => {
+    if (err) {
+      console.error('Error al recuperar la foto de perfil:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    if (results.length === 0 || !results[0].perfil) {
+      return res.status(404).json({ mensaje: 'Foto de perfil no encontrada' });
+    }
+
+    const imagen = results[0].perfil;
+
+    // Configura el encabezado para enviar la imagen
+    res.setHeader('Content-Type', 'image/webp'); // Cambia el tipo MIME según el formato de la imagen
+    res.send(imagen); // Envía los datos binarios de la imagen
+  });
+};
+
+module.exports = { uploadFiles, obtenerImagen, obtenerFotoPerfil };
