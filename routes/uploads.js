@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const UploadsController = require('../controllers/uploadsController');
+const verificarToken = require('../token'); // Importa directamente la función
 
 // Configuración de Multer
 const storage = multer.diskStorage({
@@ -19,5 +20,4 @@ router.post('/subir', upload.single('archivo'), UploadsController.uploadFiles);
 
 // Ruta para recuperar imágenes
 router.get('/:id_nota', UploadsController.obtenerImagen);
-
-module.exports = router;
+router.post('/FotoPerfil', verificarToken, upload.single('archivo'), UploadsController.subirFotoPerfil);module.exports = router;

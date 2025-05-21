@@ -67,10 +67,28 @@ const cancelarTurno = (turno_id, callback) => {
   });
 };
 
+const marcarTurnosRealizadosAutomaticamente = (callback) => {
+  const query = `
+    UPDATE turnos
+    SET disponibilidad = 'completado'
+    WHERE disponibilidad = 'reservado'
+      AND (
+        fecha < CURDATE()
+        OR (fecha = CURDATE() AND hora <= CURTIME())
+      )
+  `;
+  db.query(query, (err, resultado) => {
+    if (err) return callback(err);
+    callback(null, resultado);
+  });
+};
+
 module.exports = {
   getDisponibles,
   getByEspecialidad,
   getByProfesional,
   reservarTurno,
   cancelarTurno,
+  marcarTurnosRealizadosAutomaticamente,//Esta no se implementa en el controlador
+  // Se ejecuta automáticamente por cronometro o algo
 };
