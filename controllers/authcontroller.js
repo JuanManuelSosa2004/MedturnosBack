@@ -1,10 +1,15 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs'); // Si decides usar bcrypt para encriptar contraseñas
+const crypto = require('crypto');
 const {
   obtenerUsuarioLogeo,
   buscarUsuarioPorEmail,
   registrarUsuario,
+  guardarResetToken,
+  buscarUsuarioPorResetToken,
+  cambiarContrasenaConToken,
 } = require('../models/authModel');
+const { enviarRecuperacion } = require('../emailService'); // Agrega esta línea
 
 const SECRET_KEY = process.env.JWT_SECRET; // Usamos la clave secreta desde las variables de entorno
 
@@ -33,23 +38,17 @@ const login = (req, res) => {
       SECRET_KEY,
       { expiresIn: '1h' } // El token expira en 1 hora
     );
-    console.log;('Token generado:', token); // Depuración
-    // Almacena el token en una cookie
-    res.cookie('token', token, {
-      httpOnly: true, // Evita que el token sea accesible desde JavaScript
-      secure: process.env.NODE_ENV === 'production', // Solo en HTTPS en producción
-      maxAge: 3600000, // 1 hora en milisegundos
-    });
 
     return res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
+      token, // <-- Devuelve el token en la respuesta
     });
   });
 };
 
 // Registro
 const registro = (req, res) => {
-  const { nombre, apellido, email, contrasena } = req.body;
+  const { nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra } = req.body;
 
   // Verifica si el email ya está registrado
   buscarUsuarioPorEmail(email, (err, usuarioExistente) => {
@@ -63,7 +62,7 @@ const registro = (req, res) => {
     }
 
     // Si no existe, registrar al usuario
-    registrarUsuario([nombre, apellido, email, contrasena], (err, resultado) => {
+    registrarUsuario([nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra], (err, resultado) => {
       if (err) {
         console.error('Error al registrar usuario:', err);
         return res.status(500).json({ mensaje: 'Error interno al registrar el usuario' });
@@ -75,4 +74,58 @@ const registro = (req, res) => {
   });
 };
 
-module.exports = { login, registro };
+// Solicitar recuperación de contraseña
+const solicitarRecuperacion = (req, res) => {
+  const { email } = req.body;
+  buscarUsuarioPorEmail(email, (err, usuario) => {
+    if (err) return res.status(500).json({ mensaje: 'Error interno' });
+    if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+
+    // Generar token numérico de 8 dígitos
+    const token = Math.floor(10000000 + Math.random() * 90000000).toString();
+
+    guardarResetToken(email, token, err => {
+      if (err) return res.status(500).json({ mensaje: 'Error al guardar token' });
+
+      enviarRecuperacion(email, token, (err, info) => {
+        if (err) {
+          console.error('Error enviando email:', err);
+          return res.status(500).json({ mensaje: 'No se pudo enviar el email' });
+        }
+        res.status(200).json({
+          mensaje: 'Se ha enviado un código de recuperación a tu correo',
+        });
+      });
+    });
+  });
+};
+
+// Cambiar la contraseña usando el token
+const resetearContrasena = (req, res) => {
+  const { token, nuevaContrasena, confirmarContrasena } = req.body;
+  if (nuevaContrasena !== confirmarContrasena) {
+    return res.status(400).json({ mensaje: 'Las contraseñas no coinciden' });
+  }
+  buscarUsuarioPorResetToken(token, (err, usuario) => {
+    if (err) return res.status(500).json({ mensaje: 'Error interno' });
+    if (!usuario) return res.status(400).json({ mensaje: 'Código inválido o expirado' });
+
+    cambiarContrasenaConToken(token, nuevaContrasena, err => {
+      if (err) return res.status(500).json({ mensaje: 'Error al cambiar la contraseña' });
+      res.status(200).json({ mensaje: 'Contraseña cambiada con éxito' });
+    });
+  });
+};
+
+const logout = (req, res) => {
+  //El frontend debe eliminar el token del almacenamiento local 
+  res.status(200).json({ mensaje: 'Sesión cerrada correctamente' });
+};
+
+module.exports = {
+  login,
+  registro,
+  solicitarRecuperacion,
+  resetearContrasena,
+  logout,
+};

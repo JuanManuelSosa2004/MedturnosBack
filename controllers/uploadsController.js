@@ -1,0 +1,106 @@
+const fs = require('fs');
+const {
+  guardarArchivoNota,
+  obtenerImagenNota,
+  obtenerPerfilUsuario,
+  actualizarFotoPerfil,
+} = require('../models/uploadsModel');
+
+// Subir archivo
+const uploadFiles = (req, res) => {
+  // Verifica si se subió un archivo
+  if (!req.file) {
+    return res.status(400).json({ mensaje: 'No se proporcionó ningún archivo' });
+  }
+
+  // Obtén los datos del cuerpo de la solicitud
+  const { id_turno, contenido } = req.body;
+
+  guardarArchivoNota(id_turno, contenido, req.file.path, (err, result) => {
+    // Elimina el archivo temporal después de guardarlo
+    fs.unlinkSync(req.file.path);
+
+    if (err) {
+      console.error('Error al guardar el archivo en la base de datos:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    // Responde con éxito
+    res.status(201).json({ mensaje: 'Archivo subido con éxito', id: result.insertId });
+  });
+};
+
+// Recuperar imagen de nota médica
+const obtenerImagen = (req, res) => {
+  const { id_nota } = req.params; // Obtén el ID de la nota desde los parámetros de la URL
+
+  obtenerImagenNota(id_nota, (err, results) => {
+    if (err) {
+      console.error('Error al recuperar la imagen:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ mensaje: 'Imagen no encontrada' });
+    }
+
+    const imagen = results[0].imagenes;
+
+    // Configura el encabezado para enviar la imagen
+    res.setHeader('Content-Type', 'image/webp'); // Cambia el tipo MIME según el formato de la imagen
+    res.send(imagen); // Envía los datos binarios de la imagen
+  });
+};
+
+// Recuperar foto de perfil usando el id del usuario autenticado (token)
+const obtenerFotoPerfil = (req, res) => {
+  // El id del usuario viene del token decodificado por el middleware de autenticación
+  const id_usuario = req.user?.id || req.user?.id_usuario;
+
+  if (!id_usuario) {
+    return res.status(401).json({ mensaje: 'No autorizado' });
+  }
+
+  obtenerPerfilUsuario(id_usuario, (err, results) => {
+    if (err) {
+      console.error('Error al recuperar la foto de perfil:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    if (results.length === 0 || !results[0].perfil) {
+      return res.status(404).json({ mensaje: 'Foto de perfil no encontrada' });
+    }
+
+    const imagen = results[0].perfil;
+    res.setHeader('Content-Type', 'image/webp'); // Cambia el tipo MIME según el formato de la imagen
+    res.send(imagen);
+  });
+};
+
+// Subir foto de perfil usando el token
+const subirFotoPerfil = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ mensaje: 'No se proporcionó ningún archivo' });
+  }
+
+  const id_usuario = req.user?.id || req.user?.id_usuario;
+  if (!id_usuario) {
+    return res.status(401).json({ mensaje: 'No autorizado' });
+  }
+
+  actualizarFotoPerfil(id_usuario, req.file.path, (err, result) => {
+    fs.unlinkSync(req.file.path); // Borra el archivo temporal
+    if (err) {
+      console.error('Error al actualizar la foto de perfil:', err);
+      return res.status(500).json({ mensaje: 'Error interno al actualizar la foto de perfil' });
+    }
+    res.status(200).json({ mensaje: 'Foto de perfil actualizada con éxito' });
+  });
+};
+
+module.exports = {
+  uploadFiles,
+  obtenerImagen,
+  obtenerFotoPerfil,
+  subirFotoPerfil,
+};
