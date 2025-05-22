@@ -10,5 +10,9 @@ router.post('/register', authController.registro); // La función 'register' del
 
 router.post('/forget', authController.solicitarRecuperacion);
 router.post('/reset', authController.resetearContrasena);
+<<<<<<< HEAD
 
+=======
+//DEPRECADOrouter.post('/logout', authController.logout);
+>>>>>>> 24f49d75a71b75ffe5183e12391a587aff4d124e
 module.exports = router;
