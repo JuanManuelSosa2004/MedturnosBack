@@ -3,6 +3,11 @@ const router = express.Router();
 const multer = require('multer');
 const UploadsController = require('../controllers/uploadsController');
 
+const fs = require('fs');
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
+
 // Configuración de Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

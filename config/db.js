@@ -1,8 +1,12 @@
 const mysql = require('mysql2');
 
-// Crear conexión con los datos directamente
+// Usar variables de entorno para la conexión
 const connection = mysql.createConnection({
-  uri: 'mysql://root:FXgjiWhEHTkNBdzcBUVCfGxHeCZcQGGi@switchback.proxy.rlwy.net:12826/railway',
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 // Conectar a la base de datos
