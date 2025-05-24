@@ -34,7 +34,7 @@ const login = (req, res) => {
 
     // Genera el JWT
     const token = jwt.sign(
-      { id: usuario.id_usuario, email: usuario.email },
+      { id: usuario.id_usuario, email: usuario.email, nombre: usuario.nombre },
       SECRET_KEY,
       { expiresIn: '1h' } // El token expira en 1 hora
     );
