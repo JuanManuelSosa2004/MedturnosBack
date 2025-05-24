@@ -62,7 +62,7 @@ const deleteAccount = (req, res) => {
 
 // Controlador para obtener los datos del afiliado (obra social)
 const getAfiliado = (req, res) => {
-  const id_usuario = req.user.id; // Cambiado a `req.user.id`
+  const id_usuario = req.user.id; // Obtenido del token
 
   obtenerDatosAfiliado(id_usuario, (err, datosAfiliado) => {
     if (err) {
@@ -72,7 +72,7 @@ const getAfiliado = (req, res) => {
 
     if (!datosAfiliado) {
       return res.status(404).json({ mensaje: 'No se encontraron datos de afiliado' });
-    }
+    } 
 
     res.status(200).json(datosAfiliado);
   });

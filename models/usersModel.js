@@ -5,10 +5,13 @@ const db = require('../config/db');
 
 const obtenerDatosAfiliado = (id_usuario, callback) => {
   const query = `
-      SELECT plan, precio, fecha_fin, id_obra
-      FROM afiliado
-      WHERE id_usuario = ?
-    `;
+    SELECT 
+      o.nombre_obra AS obraSocial,
+      a.id_credencial AS numeroCredencial
+    FROM afiliado a
+    JOIN obrassociales o ON a.id_obra = o.id_obra
+    WHERE a.id_usuario = ?
+  `;
   db.query(query, [id_usuario], (err, results) => {
     if (err) return callback(err);
     if (results.length === 0) return callback(null, null);
