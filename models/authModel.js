@@ -1,29 +1,28 @@
 const db = require('../config/db');
 
-// Función para obtener un usuario por email y contraseña (sin encriptación)
+
 const obtenerUsuarioLogeo = ([email, contrasena], callback) => {
-  console.log('Buscando usuario con email:', email, 'y contraseña:', contrasena); // Depuración
+  console.log('Buscando usuario con email:', email, 'y contraseña:', contrasena); 
   const query = 'SELECT * FROM usuarios WHERE email = ? AND contrasena = ?';
 
   db.query(query, [email, contrasena], (error, results) => {
     if (error) {
-      console.error('Error en la consulta SQL:', error); // Depuración
+      console.error('Error en la consulta SQL:', error); 
       return callback(error);
     }
 
-    console.log('Resultado de la consulta:', results); // Depuración
+    console.log('Resultado de la consulta:', results);
 
     if (results.length === 0) {
-      console.log('Usuario no encontrado'); // Depuración
+      console.log('Usuario no encontrado');
       return callback(null, false);
     }
 
-    console.log('Logeo exitoso, usuario encontrado:', results[0]); // Depuración
+    console.log('Logeo exitoso, usuario encontrado:', results[0]);
     callback(null, results[0]);
   });
 };
 
-// Función para buscar un usuario por email
 const buscarUsuarioPorEmail = (email, callback) => {
   const query = 'SELECT * FROM usuarios WHERE email = ?';
 
@@ -31,14 +30,14 @@ const buscarUsuarioPorEmail = (email, callback) => {
     if (err) return callback(err);
 
     if (results.length > 0) {
-      return callback(null, results[0]); // Usuario encontrado
+      return callback(null, results[0]);
     }
 
-    return callback(null, null); // No existe el usuario con ese email
+    return callback(null, null);
   });
 };
 
-// Función para registrar un nuevo usuario
+
 const registrarUsuario = (
   [nombre, apellido, email, contrasena, nombre_obra, plan],
   callback
@@ -104,7 +103,6 @@ const guardarResetToken = (email, token, callback) => {
   db.query(query, [token, expiry, email], callback);
 };
 
-// Buscar usuario por token de reseteo
 const buscarUsuarioPorResetToken = (token, callback) => {
   const now = new Date();
   const query = 'SELECT * FROM usuarios WHERE reset_token = ? AND reset_token_expiry > ?';
