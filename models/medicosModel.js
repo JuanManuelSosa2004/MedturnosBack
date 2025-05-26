@@ -10,7 +10,14 @@ const obtenerTodosLosMedicos = (callback) => {
 
     const medicos = results.map((medico) => ({
       ...medico,
-      diasTrabajo: JSON.parse(medico.diasTrabajo || '[]'), // Manejar NULL como un array vacío
+      diasTrabajo: (() => {
+        try {
+          return JSON.parse(medico.diasTrabajo || '[]');
+        } catch (error) {
+          console.error('Error al parsear diasTrabajo:', error);
+          return [];
+        }
+      })(),
     }));
 
     callback(null, medicos);
@@ -29,7 +36,14 @@ const obtenerMedicoPorId = (id, callback) => {
 
     const medico = {
       ...results[0],
-      diasTrabajo: JSON.parse(results[0].diasTrabajo || '[]'), // Manejar NULL como un array vacío
+      diasTrabajo: (() => {
+        try {
+          return JSON.parse(results[0].diasTrabajo || '[]');
+        } catch (error) {
+          console.error('Error al parsear diasTrabajo:', error);
+          return [];
+        }
+      })(),
     };
 
     callback(null, medico);
@@ -48,7 +62,14 @@ const obtenerMedicosPorEspecialidad = (especialidad, callback) => {
 
     const medicos = results.map((medico) => ({
       ...medico,
-      diasTrabajo: JSON.parse(medico.diasTrabajo || '[]'), // Manejar NULL como un array vacío
+      diasTrabajo: (() => {
+        try {
+          return JSON.parse(medico.diasTrabajo || '[]');
+        } catch (error) {
+          console.error('Error al parsear diasTrabajo:', error);
+          return [];
+        }
+      })(),
     }));
 
     callback(null, medicos);
