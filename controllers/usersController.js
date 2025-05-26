@@ -5,6 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET ;
 
 
 const getProfile = (req, res) => {
+    const id_usuario = req.user.id; 
   console.log('Datos del usuario en req.user:', req.user);
 
   if (!id_usuario) {
