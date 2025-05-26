@@ -2,40 +2,103 @@ const db = require('../config/db');
 
 const getDisponibles = (callback) => {
   const query = `
-    SELECT id_turno, fecha, hora, disponibilidad, id_profesional, id_usuario, id_especialidad
-    FROM turnos
-    WHERE disponibilidad = 'disponible'
+    SELECT 
+      t.id_turno,
+      t.fecha,
+      t.hora,
+      t.disponibilidad,
+      t.id_profesional,
+      t.id_usuario,
+      t.id_especialidad,
+      p.nombre_profesional AS nombre,
+      e.descripcion AS especialidad,
+      p.ubicacion AS hospital,
+      p.diasTrabajo
+    FROM turnos t
+    JOIN profesionales p ON t.id_profesional = p.id_profesional
+    JOIN especialidad e ON t.id_especialidad = e.id_especialidad
+    WHERE t.disponibilidad = 'disponible'
   `;
   db.query(query, (err, resultados) => {
     if (err) {
       console.error('Error en la consulta SQL:', err);
       return callback(err);
     }
-    callback(null, resultados);
+
+    const turnos = resultados.map((turno) => ({
+      ...turno,
+      diasTrabajo: turno.diasTrabajo
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        : [], // Si es NULL, devolver un array vacío
+    }));
+
+    callback(null, turnos);
   });
 };
 
 const getByEspecialidad = (id_especialidad, callback) => {
   const query = `
-    SELECT id_turno, fecha, hora, disponibilidad, id_profesional, id_usuario, id_especialidad
-    FROM turnos
-    WHERE disponibilidad = 'disponible' AND id_especialidad = ?
+    SELECT 
+      t.id_turno,
+      t.fecha,
+      t.hora,
+      t.disponibilidad,
+      t.id_profesional,
+      t.id_usuario,
+      t.id_especialidad,
+      p.nombre_profesional AS nombre,
+      e.descripcion AS especialidad,
+      p.ubicacion AS hospital,
+      p.diasTrabajo
+    FROM turnos t
+    JOIN profesionales p ON t.id_profesional = p.id_profesional
+    JOIN especialidad e ON t.id_especialidad = e.id_especialidad
+    WHERE t.disponibilidad = 'disponible' AND t.id_especialidad = ?
   `;
   db.query(query, [id_especialidad], (err, resultados) => {
     if (err) return callback(err);
-    callback(null, resultados);
+
+    const turnos = resultados.map((turno) => ({
+      ...turno,
+      diasTrabajo: turno.diasTrabajo
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        : [], // Si es NULL, devolver un array vacío
+    }));
+
+    callback(null, turnos);
   });
 };
 
 const getByProfesional = (id_profesional, callback) => {
   const query = `
-    SELECT id_turno, fecha, hora, disponibilidad, id_profesional, id_usuario, id_especialidad
-    FROM turnos
-    WHERE disponibilidad = 'disponible' AND id_profesional = ?
+    SELECT 
+      t.id_turno,
+      t.fecha,
+      t.hora,
+      t.disponibilidad,
+      t.id_profesional,
+      t.id_usuario,
+      t.id_especialidad,
+      p.nombre_profesional AS nombre,
+      e.descripcion AS especialidad,
+      p.ubicacion AS hospital,
+      p.diasTrabajo
+    FROM turnos t
+    JOIN profesionales p ON t.id_profesional = p.id_profesional
+    JOIN especialidad e ON t.id_especialidad = e.id_especialidad
+    WHERE t.disponibilidad = 'disponible' AND t.id_profesional = ?
   `;
   db.query(query, [id_profesional], (err, resultados) => {
     if (err) return callback(err);
-    callback(null, resultados);
+
+    const turnos = resultados.map((turno) => ({
+      ...turno,
+      diasTrabajo: turno.diasTrabajo
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        : [], // Si es NULL, devolver un array vacío
+    }));
+
+    callback(null, turnos);
   });
 };
 
@@ -85,6 +148,5 @@ module.exports = {
   getByProfesional,
   reservarTurno,
   cancelarTurno,
-  marcarTurnosRealizadosAutomaticamente,//Esta no se implementa en el controlador
-  // Se ejecuta automáticamente por cronometro o algo
+  marcarTurnosRealizadosAutomaticamente,
 };
