@@ -28,11 +28,11 @@ const getProfile = (req, res) => {
 
 // Controlador para actualizar el perfil del usuario
 const updateProfile = (req, res) => {
-  const id_usuario = req.user.id; // Cambiado a `req.user.id`
-  const { nombre, apellido, email } = req.body;
-  console.log('Datos para actualizar el perfil:', { nombre, apellido, email }); // Depuración 
+  const id_usuario = req.user.id;
+  const userData = req.body;
+  console.log('Datos para actualizar el perfil:', userData); // Depuración
 
-  updateUser(id_usuario, { nombre, apellido, email }, (err, usuarioActualizado) => {
+  updateUser(id_usuario, userData, (err, usuarioActualizado) => {
     if (err) {
       console.error('Error al actualizar el perfil:', err);
       return res.status(500).json({ mensaje: 'Error interno' });

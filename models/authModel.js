@@ -121,6 +121,18 @@ const cambiarContrasenaConToken = (token, nuevaContrasena, callback) => {
   db.query(query, [nuevaContrasena, token], callback);
 };
 
+// Función para actualizar el nombre de la obra del afiliado
+const actualizarNombreObraAfiliado = (userData, userId, callback) => {
+  const queryAfiliado = `UPDATE afiliado SET nombre_obra = ? WHERE id_usuario = ?`;
+  db.query(queryAfiliado, [userData.nombre_obra, userId], (error2, results2) => {
+    if (error2) {
+      console.error('Error al actualizar afiliado:', error2); // <-- Agrega esto
+      return callback(error2);
+    }
+    callback(null, { afiliado: results2 });
+  });
+};
+
 module.exports = {
   obtenerUsuarioLogeo,
   buscarUsuarioPorEmail,
@@ -129,4 +141,5 @@ module.exports = {
   guardarResetToken,
   buscarUsuarioPorResetToken,
   cambiarContrasenaConToken,
+  actualizarNombreObraAfiliado,
 };
