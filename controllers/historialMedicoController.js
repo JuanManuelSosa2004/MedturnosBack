@@ -6,7 +6,6 @@ const {
   obtenerImagenesHistorial,
 } = require('../models/historialMedicoModel');
 
-// Turnos realizados
 const turnosRealizados = (req, res) => {
   const id_usuario = req.user?.id_usuario || req.user?.id;
   if (!id_usuario) return res.status(401).json({ mensaje: 'No autorizado' });
@@ -16,7 +15,6 @@ const turnosRealizados = (req, res) => {
   });
 };
 
-// Turnos cancelados
 const turnosCancelados = (req, res) => {
   const id_usuario = req.user?.id_usuario || req.user?.id;
   if (!id_usuario) return res.status(401).json({ mensaje: 'No autorizado' });
@@ -26,7 +24,6 @@ const turnosCancelados = (req, res) => {
   });
 };
 
-// Turnos programados
 const turnosProgramados = (req, res) => {
   const id_usuario = req.user?.id_usuario || req.user?.id;
   if (!id_usuario) return res.status(401).json({ mensaje: 'No autorizado' });
@@ -36,18 +33,15 @@ const turnosProgramados = (req, res) => {
   });
 };
 
-// Notas médicas
 const obtenerNotasMedicasController = (req, res) => {
   const id_usuario = req.user?.id_usuario || req.user?.id;
   if (!id_usuario) return res.status(401).json({ mensaje: 'No autorizado' });
   obtenerNotasMedicas(id_usuario, (err, resultados) => {
     if (err) return res.status(500).json({ mensaje: 'Error interno al obtener las notas médicas.' });
-    // Devuelve array vacío si no hay notas
     res.status(200).json(resultados);
   });
 };
 
-// Imágenes del historial médico
 const imagenesHistorial = (req, res) => {
   const id_usuario = req.user?.id_usuario || req.user?.id;
   if (!id_usuario) return res.status(401).json({ mensaje: 'No autorizado' });

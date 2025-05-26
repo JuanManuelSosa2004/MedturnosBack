@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs'); // Si decides usar bcrypt para encriptar contraseñas
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const {
   obtenerUsuarioLogeo,
@@ -9,9 +9,8 @@ const {
   buscarUsuarioPorResetToken,
   cambiarContrasenaConToken,
 } = require('../models/authModel');
-const { enviarRecuperacion } = require('../emailService'); // Agrega esta línea
-
-const SECRET_KEY = process.env.JWT_SECRET; // Usamos la clave secreta desde las variables de entorno
+const { enviarRecuperacion } = require('../emailService');
+const SECRET_KEY = process.env.JWT_SECRET; 
 
 // Login
 const login = (req, res) => {
@@ -36,21 +35,19 @@ const login = (req, res) => {
     const token = jwt.sign(
       { id: usuario.id_usuario, email: usuario.email, nombre: usuario.nombre },
       SECRET_KEY,
-      { expiresIn: '1h' } // El token expira en 1 hora
+      { expiresIn: '1h' } 
     );
 
     return res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
-      token, // <-- Devuelve el token en la respuesta
+      token, 
     });
   });
 };
 
-// Registro
 const registro = (req, res) => {
-  const { nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra } = req.body;
+  const { nombre, apellido, email, contrasena, nombre_obra, plan } = req.body;
 
-  // Verifica si el email ya está registrado
   buscarUsuarioPorEmail(email, (err, usuarioExistente) => {
     if (err) {
       console.error('Error al buscar usuario:', err);
@@ -62,14 +59,14 @@ const registro = (req, res) => {
     }
 
     // Si no existe, registrar al usuario
-    registrarUsuario([nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra], (err, resultado) => {
+    registrarUsuario([nombre, apellido, email, contrasena, nombre_obra, plan], (err, resultado) => {
       if (err) {
         console.error('Error al registrar usuario:', err);
         return res.status(500).json({ mensaje: 'Error interno al registrar el usuario' });
       }
 
-      // Aquí podrías generar un token también si lo deseas, pero no es necesario
-      res.status(201).json({ mensaje: 'Usuario registrado con éxito' });
+      console.log('Registro exitoso en controller:', resultado);
+      return res.status(201).json({ mensaje: 'Usuario registrado con éxito', resultado });
     });
   });
 };
@@ -118,7 +115,6 @@ const resetearContrasena = (req, res) => {
 };
 
 const logout = (req, res) => {
-  //El frontend debe eliminar el token del almacenamiento local 
   res.status(200).json({ mensaje: 'Sesión cerrada correctamente' });
 };
 
