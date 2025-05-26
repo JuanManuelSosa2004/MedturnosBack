@@ -23,14 +23,9 @@ const obtenerTurnosRealizados = (id_usuario, callback) => {
 
     const turnos = resultados.map((turno) => ({
       ...turno,
-      diasTrabajo: (() => {
-        try {
-          return JSON.parse(turno.diasTrabajo || '[]');
-        } catch (error) {
-          console.error('Error al parsear diasTrabajo:', error);
-          return [];
-        }
-      })(),
+      diasTrabajo: turno.diasTrabajo
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) //Se opto por string separado, json no andava
+        : [], 
     }));
 
     callback(null, turnos);
@@ -60,14 +55,9 @@ const obtenerTurnosCancelados = (id_usuario, callback) => {
 
     const turnos = resultados.map((turno) => ({
       ...turno,
-      diasTrabajo: (() => {
-        try {
-          return JSON.parse(turno.diasTrabajo || '[]');
-        } catch (error) {
-          console.error('Error al parsear diasTrabajo:', error);
-          return [];
-        }
-      })(),
+      diasTrabajo: turno.diasTrabajo
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) 
+        : [], 
     }));
 
     callback(null, turnos);
@@ -97,14 +87,9 @@ const obtenerTurnosProgramados = (id_usuario, callback) => {
 
     const turnos = resultados.map((turno) => ({
       ...turno,
-      diasTrabajo: (() => {
-        try {
-          return JSON.parse(turno.diasTrabajo || '[]');
-        } catch (error) {
-          console.error('Error al parsear diasTrabajo:', error);
-          return [];
-        }
-      })(),
+      diasTrabajo: turno.diasTrabajo
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        : [], // Si es NULL, devolver un array vacío
     }));
 
     callback(null, turnos);

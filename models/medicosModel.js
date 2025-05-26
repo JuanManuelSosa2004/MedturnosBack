@@ -10,14 +10,9 @@ const obtenerTodosLosMedicos = (callback) => {
 
     const medicos = results.map((medico) => ({
       ...medico,
-      diasTrabajo: (() => {
-        try {
-          return JSON.parse(medico.diasTrabajo || '[]');
-        } catch (error) {
-          console.error('Error al parsear diasTrabajo:', error);
-          return [];
-        }
-      })(),
+      diasTrabajo: medico.diasTrabajo
+        ? medico.diasTrabajo.split(',').map((dia) => dia.trim()) //No andava con json, por lo que se cambio a string separado por comas
+        : [], 
     }));
 
     callback(null, medicos);
@@ -36,14 +31,9 @@ const obtenerMedicoPorId = (id, callback) => {
 
     const medico = {
       ...results[0],
-      diasTrabajo: (() => {
-        try {
-          return JSON.parse(results[0].diasTrabajo || '[]');
-        } catch (error) {
-          console.error('Error al parsear diasTrabajo:', error);
-          return [];
-        }
-      })(),
+      diasTrabajo: results[0].diasTrabajo
+        ? results[0].diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        : [], // Si es NULL, devolver un array vacío
     };
 
     callback(null, medico);
@@ -62,14 +52,9 @@ const obtenerMedicosPorEspecialidad = (especialidad, callback) => {
 
     const medicos = results.map((medico) => ({
       ...medico,
-      diasTrabajo: (() => {
-        try {
-          return JSON.parse(medico.diasTrabajo || '[]');
-        } catch (error) {
-          console.error('Error al parsear diasTrabajo:', error);
-          return [];
-        }
-      })(),
+      diasTrabajo: medico.diasTrabajo
+        ? medico.diasTrabajo.split(',').map((dia) => dia.trim()) 
+        : [], 
     }));
 
     callback(null, medicos);
