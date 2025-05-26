@@ -82,15 +82,18 @@ const registrarUsuario = (
 // Función para obtener los datos de afiliado por id_usuario
 const obtenerDatosAfiliado = (id_usuario, callback) => {
   const query = `
-    SELECT id_credencial, nombre_obra
+    SELECT id_credencial AS numeroCredencial, nombre_obra AS obraSocial
     FROM afiliado
     WHERE id_usuario = ?
   `;
 
   db.query(query, [id_usuario], (err, results) => {
-    if (err) return callback(err);
-    if (results.length === 0) return callback(null, null); // No se encontró afiliado
-    callback(null, results[0]); // Datos del afiliado encontrados
+    if (err) {
+      console.error('Error SQL obtenerDatosAfiliado:', err);
+      return callback(err);
+    }
+    if (results.length === 0) return callback(null, null);
+    callback(null, results[0]);
   });
 };
 
