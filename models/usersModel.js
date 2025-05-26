@@ -63,6 +63,19 @@ const updateUser = (userId, userData, callback) => {
     valores.push(userData.contrasena);
   }
 
+  // --- Lógica para actualizar afiliado ---
+  const camposAfiliado = [];
+  const valoresAfiliado = [];
+  if (userData.nombre_obra !== undefined) {
+    camposAfiliado.push('nombre_obra = ?');
+    valoresAfiliado.push(userData.nombre_obra);
+  }
+  if (userData.plan !== undefined) {
+    camposAfiliado.push('plan = ?');
+    valoresAfiliado.push(userData.plan);
+  }
+
+
   if (campos.length > 0) {
     const query = `UPDATE usuarios SET ${campos.join(', ')} WHERE id_usuario = ?`;
     valores.push(userId);
@@ -70,9 +83,10 @@ const updateUser = (userId, userData, callback) => {
     db.query(query, valores, (error, results) => {
       if (error) return callback(error);
 
-      if (userData.nombre_obra !== undefined) {
-        const queryAfiliado = `UPDATE afiliado SET nombre_obra = ? WHERE id_usuario = ?`;
-        db.query(queryAfiliado, [userData.nombre_obra, userId], (error2, results2) => {
+      if (camposAfiliado.length > 0) {
+        const queryAfiliado = `UPDATE afiliado SET ${camposAfiliado.join(', ')} WHERE id_usuario = ?`;
+        valoresAfiliado.push(userId);
+        db.query(queryAfiliado, valoresAfiliado, (error2, results2) => {
           if (error2) return callback(error2);
           callback(null, { usuario: results, afiliado: results2 });
         });
@@ -80,13 +94,16 @@ const updateUser = (userId, userData, callback) => {
         callback(null, { usuario: results });
       }
     });
-  } else if (userData.nombre_obra !== undefined) {
-    const queryAfiliado = `UPDATE afiliado SET nombre_obra = ? WHERE id_usuario = ?`;
-    db.query(queryAfiliado, [userData.nombre_obra, userId], (error2, results2) => {
+  } else if (camposAfiliado.length > 0) {
+    // Solo actualizar afiliado si no hay campos de usuario
+    const queryAfiliado = `UPDATE afiliado SET ${camposAfiliado.join(', ')} WHERE id_usuario = ?`;
+    valoresAfiliado.push(userId);
+    db.query(queryAfiliado, valoresAfiliado, (error2, results2) => {
       if (error2) return callback(error2);
       callback(null, { afiliado: results2 });
     });
   } else {
+
     return callback(new Error('No se enviaron campos para actualizar'));
   }
 };

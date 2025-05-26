@@ -48,7 +48,7 @@ const login = (req, res) => {
 
 // Registro
 const registro = (req, res) => {
-  const { nombre, apellido, email, contrasena, nombre_obra } = req.body;
+  const { nombre, apellido, email, contrasena, nombre_obra, plan } = req.body;
 
   // Verifica si el email ya está registrado
   buscarUsuarioPorEmail(email, (err, usuarioExistente) => {
@@ -62,7 +62,7 @@ const registro = (req, res) => {
     }
 
     // Si no existe, registrar al usuario
-    registrarUsuario([nombre, apellido, email, contrasena, nombre_obra], (err, resultado) => {
+    registrarUsuario([nombre, apellido, email, contrasena, nombre_obra, plan], (err, resultado) => {
       if (err) {
         console.error('Error al registrar usuario:', err);
         return res.status(500).json({ mensaje: 'Error interno al registrar el usuario' });

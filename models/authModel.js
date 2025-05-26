@@ -40,7 +40,7 @@ const buscarUsuarioPorEmail = (email, callback) => {
 
 // Función para registrar un nuevo usuario
 const registrarUsuario = (
-  [nombre, apellido, email, contrasena, nombre_obra],
+  [nombre, apellido, email, contrasena, nombre_obra, plan],
   callback
 ) => {
   const queryUsuario = `
@@ -55,10 +55,10 @@ const registrarUsuario = (
     const id_usuario = resultUsuario.insertId;
 
     const queryAfiliado = `
-      INSERT INTO afiliado (id_usuario, nombre_obra)
-      VALUES (?, ?)
+      INSERT INTO afiliado (id_usuario, nombre_obra, plan)
+      VALUES (?, ?, ?)
     `;
-    const paramsAfiliado = [id_usuario, nombre_obra];
+    const paramsAfiliado = [id_usuario, nombre_obra, plan];
 
     db.query(queryAfiliado, paramsAfiliado, (err2, resultAfiliado) => {
       if (err2) return callback(err2);
@@ -72,14 +72,14 @@ const registrarUsuario = (
         },
         afiliado: {
           id_credencial: resultAfiliado.insertId,
-          nombre_obra
+          nombre_obra,
+          plan
         }
       });
     });
   });
 };
 
-// Función para obtener los datos de afiliado por id_usuario
 const obtenerDatosAfiliado = (id_usuario, callback) => {
   const query = `
     SELECT id_credencial, nombre_obra
@@ -89,7 +89,7 @@ const obtenerDatosAfiliado = (id_usuario, callback) => {
 
   db.query(query, [id_usuario], (err, results) => {
     if (err) {
-      console.error('Error SQL obtenerDatosAfiliado:', err); // <-- Agrega esto
+      console.error('Error SQL obtenerDatosAfiliado:', err); 
       return callback(err);
     }
     if (results.length === 0) return callback(null, null);
@@ -97,9 +97,9 @@ const obtenerDatosAfiliado = (id_usuario, callback) => {
   });
 };
 
-// Guardar el token de reseteo en la base de datos
+
 const guardarResetToken = (email, token, callback) => {
-  const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos desde ahora
+  const expiry = new Date(Date.now() + 15 * 60 * 1000);
   const query = 'UPDATE usuarios SET reset_token = ?, reset_token_expiry = ? WHERE email = ?';
   db.query(query, [token, expiry, email], callback);
 };
@@ -115,18 +115,17 @@ const buscarUsuarioPorResetToken = (token, callback) => {
   });
 };
 
-// Cambiar la contraseña y limpiar el token
 const cambiarContrasenaConToken = (token, nuevaContrasena, callback) => {
   const query = 'UPDATE usuarios SET contrasena = ?, reset_token = NULL WHERE reset_token = ?';
   db.query(query, [nuevaContrasena, token], callback);
 };
 
-// Función para actualizar el nombre de la obra del afiliado
+
 const actualizarNombreObraAfiliado = (userData, userId, callback) => {
   const queryAfiliado = `UPDATE afiliado SET nombre_obra = ? WHERE id_usuario = ?`;
   db.query(queryAfiliado, [userData.nombre_obra, userId], (error2, results2) => {
     if (error2) {
-      console.error('Error al actualizar afiliado:', error2); // <-- Agrega esto
+      console.error('Error al actualizar afiliado:', error2); 
       return callback(error2);
     }
     callback(null, { afiliado: results2 });
