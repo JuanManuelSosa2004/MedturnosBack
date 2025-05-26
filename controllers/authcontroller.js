@@ -48,7 +48,7 @@ const login = (req, res) => {
 
 // Registro
 const registro = (req, res) => {
-  const { nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra } = req.body;
+  const { nombre, apellido, email, contrasena, nombre_obra } = req.body;
 
   // Verifica si el email ya está registrado
   buscarUsuarioPorEmail(email, (err, usuarioExistente) => {
@@ -62,14 +62,14 @@ const registro = (req, res) => {
     }
 
     // Si no existe, registrar al usuario
-    registrarUsuario([nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra], (err, resultado) => {
+    registrarUsuario([nombre, apellido, email, contrasena, nombre_obra], (err, resultado) => {
       if (err) {
         console.error('Error al registrar usuario:', err);
         return res.status(500).json({ mensaje: 'Error interno al registrar el usuario' });
       }
 
-      // Aquí podrías generar un token también si lo deseas, pero no es necesario
-      res.status(201).json({ mensaje: 'Usuario registrado con éxito' });
+      console.log('Registro exitoso en controller:', resultado);
+      return res.status(201).json({ mensaje: 'Usuario registrado con éxito', resultado });
     });
   });
 };

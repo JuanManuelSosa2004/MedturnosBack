@@ -39,27 +39,42 @@ const buscarUsuarioPorEmail = (email, callback) => {
 };
 
 // Función para registrar un nuevo usuario
-const registrarUsuario = ([nombre, apellido, email, contrasena, plan, precio, fecha_fin, id_obra], callback) => {
+const registrarUsuario = (
+  [nombre, apellido, email, contrasena, nombre_obra],
+  callback
+) => {
   const queryUsuario = `
     INSERT INTO usuarios (nombre, apellido, email, contrasena)
     VALUES (?, ?, ?, ?)
   `;
   const paramsUsuario = [nombre, apellido, email, contrasena];
 
-  db.query(queryUsuario, paramsUsuario, (error, results) => {
-    if (error) return callback(error);
+  db.query(queryUsuario, paramsUsuario, (err, resultUsuario) => {
+    if (err) return callback(err);
 
-    const id_usuario = results.insertId; // ID del usuario recién creado
+    const id_usuario = resultUsuario.insertId;
 
     const queryAfiliado = `
-      INSERT INTO afiliado (id_usuario, plan, precio, fecha_fin, id_obra)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO afiliado (id_usuario, nombre_obra)
+      VALUES (?, ?)
     `;
-    const paramsAfiliado = [id_usuario, plan, precio, fecha_fin, id_obra];
+    const paramsAfiliado = [id_usuario, nombre_obra];
 
-    db.query(queryAfiliado, paramsAfiliado, (error2, results2) => {
-      if (error2) return callback(error2);
-      callback(null, { usuario: results, afiliado: results2 });
+    db.query(queryAfiliado, paramsAfiliado, (err2, resultAfiliado) => {
+      if (err2) return callback(err2);
+
+      callback(null, {
+        usuario: {
+          id_usuario,
+          nombre,
+          apellido,
+          email
+        },
+        afiliado: {
+          id_credencial: resultAfiliado.insertId,
+          nombre_obra
+        }
+      });
     });
   });
 };
@@ -67,7 +82,7 @@ const registrarUsuario = ([nombre, apellido, email, contrasena, plan, precio, fe
 // Función para obtener los datos de afiliado por id_usuario
 const obtenerDatosAfiliado = (id_usuario, callback) => {
   const query = `
-    SELECT plan, precio, fecha_fin, id_obra
+    SELECT id_credencial, nombre_obra
     FROM afiliado
     WHERE id_usuario = ?
   `;
