@@ -80,6 +80,8 @@ const obtenerFotoPerfil = (req, res) => {
 
 // Subir foto de perfil usando el token
 const subirFotoPerfil = (req, res) => {
+    console.log('Archivo recibido en backend:', req.file); // <-- AGREGA ESTO
+
   if (!req.file) {
     return res.status(400).json({ mensaje: 'No se proporcionó ningún archivo' });
   }
