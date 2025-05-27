@@ -117,7 +117,7 @@ const reservarTurno = (turno_id, usuario_id, callback) => {
 const cancelarTurno = (turno_id, callback) => {
   const query = `
     UPDATE turnos
-    SET id_usuario = NULL, disponibilidad = 'cancelado'
+    SET disponibilidad = 'cancelado'
     WHERE id_turno = ? AND disponibilidad = 'reservado'
   `;
   db.query(query, [turno_id], (err, resultado) => {
