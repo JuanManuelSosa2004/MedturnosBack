@@ -8,7 +8,7 @@ const obtenerTurnosRealizados = (id_usuario, callback) => {
       t.fecha,
       t.hora,
       p.nombre_profesional,
-      p.email, -- Agregado el email del médico
+      p.email,
       p.ubicacion,
       p.diasTrabajo,
       e.descripcion AS especialidad
@@ -21,14 +21,12 @@ const obtenerTurnosRealizados = (id_usuario, callback) => {
   `;
   db.query(query, [id_usuario], (err, resultados) => {
     if (err) return callback(err);
-
     const turnos = resultados.map((turno) => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
-        : [], // Si es NULL, devolver un array vacío
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim())
+        : [],
     }));
-
     callback(null, turnos);
   });
 };
@@ -41,7 +39,7 @@ const obtenerTurnosCancelados = (id_usuario, callback) => {
       t.fecha,
       t.hora,
       p.nombre_profesional,
-      p.email, -- Agregado el email del médico
+      p.email,
       p.ubicacion,
       p.diasTrabajo,
       e.descripcion AS especialidad
@@ -54,14 +52,12 @@ const obtenerTurnosCancelados = (id_usuario, callback) => {
   `;
   db.query(query, [id_usuario], (err, resultados) => {
     if (err) return callback(err);
-
     const turnos = resultados.map((turno) => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
-        : [], // Si es NULL, devolver un array vacío
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim())
+        : [],
     }));
-
     callback(null, turnos);
   });
 };
@@ -74,7 +70,7 @@ const obtenerTurnosProgramados = (id_usuario, callback) => {
       t.fecha,
       t.hora,
       p.nombre_profesional,
-      p.email, -- Agregado el email del médico
+      p.email,
       p.ubicacion,
       p.diasTrabajo,
       e.descripcion AS especialidad
@@ -87,15 +83,27 @@ const obtenerTurnosProgramados = (id_usuario, callback) => {
   `;
   db.query(query, [id_usuario], (err, resultados) => {
     if (err) return callback(err);
-
     const turnos = resultados.map((turno) => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
-        : [], // Si es NULL, devolver un array vacío
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim())
+        : [],
     }));
-
     callback(null, turnos);
+  });
+};
+
+const obtenerNotaMedicaPorTurno = (id_turno, callback) => {
+  const query = `
+    SELECT 
+      n.contenido
+    FROM notasmedicas n
+    WHERE n.id_turno = ?
+  `;
+  db.query(query, [id_turno], (err, resultados) => {
+    if (err) return callback(err);
+    if (resultados.length === 0) return callback(null, null);
+    callback(null, resultados[0]);
   });
 };
 
@@ -103,4 +111,5 @@ module.exports = {
   obtenerTurnosRealizados,
   obtenerTurnosCancelados,
   obtenerTurnosProgramados,
+  obtenerNotaMedicaPorTurno,
 };

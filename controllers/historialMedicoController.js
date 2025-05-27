@@ -4,6 +4,7 @@ const {
   obtenerTurnosProgramados,
   obtenerNotasMedicas,
   obtenerImagenesHistorial,
+  obtenerNotaMedicaPorTurno,
 } = require('../models/historialMedicoModel');
 
 const turnosRealizados = (req, res) => {
@@ -51,10 +52,28 @@ const imagenesHistorial = (req, res) => {
   });
 };
 
+const obtenerNotaMedicaPorTurnoController = (req, res) => {
+  const { id_turno } = req.params;
+  if (!id_turno) {
+    return res.status(400).json({ mensaje: 'No se proporcionó el ID del turno' });
+  }
+  obtenerNotaMedicaPorTurno(id_turno, (err, nota) => {
+    if (err) {
+      console.error('Error al obtener la nota médica:', err);
+      return res.status(500).json({ mensaje: 'Error interno al obtener la nota médica' });
+    }
+    if (!nota) {
+      return res.status(404).json({ mensaje: 'Nota médica no encontrada para el turno especificado' });
+    }
+    res.status(200).json(nota);
+  });
+};
+
 module.exports = {
   turnosRealizados,
   turnosCancelados,
   turnosProgramados,
   obtenerNotasMedicas: obtenerNotasMedicasController,
   imagenesHistorial,
+  obtenerNotaMedicaPorTurno: obtenerNotaMedicaPorTurnoController,
 };
