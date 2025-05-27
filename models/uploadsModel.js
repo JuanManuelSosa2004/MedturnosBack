@@ -18,7 +18,7 @@ const guardarArchivoNota = (id_turno, contenido, filePath, callback) => {
 // Obtener imagen de nota médica
 const obtenerImagenNota = (id_nota, callback) => {
   const query = 'SELECT imagenes FROM notasmedicas WHERE id_nota = ?';
-  db.query(query, [id_nota], callback);
+  db.query(query, [id_turno], callback);
 };
 
 // Actualmente sin uso (Mantenido por si se necesita en el futuro)
