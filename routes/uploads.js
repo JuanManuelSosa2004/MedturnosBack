@@ -25,7 +25,7 @@ router.post('/subir', upload.single('archivo'), UploadsController.uploadFiles);
 router.get('/perfil', verificarToken, UploadsController.obtenerFotoPerfil);
 
 // Ruta para recuperar imágenes
-router.get('/:id_nota', UploadsController.obtenerImagen);
+router.get('/turno/:id_turno', UploadsController.obtenerImagen);
 router.post('/FotoPerfil', verificarToken, upload.single('archivo'), UploadsController.subirFotoPerfil);
 
 

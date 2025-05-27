@@ -33,9 +33,9 @@ const uploadFiles = (req, res) => {
 
 // Recuperar imagen de nota médica
 const obtenerImagen = (req, res) => {
-  const { id_nota } = req.params; // Obtén el ID de la nota desde los parámetros de la URL
+  const { id_turno } = req.params; // Obtén el ID del turno desde los parámetros de la URL
 
-  obtenerImagenNota(id_nota, (err, results) => {
+  obtenerImagenNota(id_turno, (err, results) => {
     if (err) {
       console.error('Error al recuperar la imagen:', err);
       return res.status(500).json({ mensaje: 'Error interno del servidor' });
