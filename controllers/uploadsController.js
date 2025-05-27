@@ -33,7 +33,7 @@ const uploadFiles = (req, res) => {
 
 // Recuperar imagen de nota médica
 const obtenerImagen = (req, res) => {
-  const { id_turno } = req.params; // Obtén el ID del turno desde los parámetros de la URL
+  const { id_turno } = req.params;
 
   obtenerImagenNota(id_turno, (err, results) => {
     if (err) {
@@ -45,9 +45,11 @@ const obtenerImagen = (req, res) => {
       return res.status(404).json({ mensaje: 'Imagen no encontrada' });
     }
 
-    const imagen = results[0].imagenes;
-
-    // Devuelve la imagen como base64 en un JSON
+    let imagen = results[0].imagenes;
+    // Si viene como { type: 'Buffer', data: [...] }, conviértelo a Buffer real
+    if (!Buffer.isBuffer(imagen) && imagen?.data) {
+      imagen = Buffer.from(imagen.data);
+    }
     res.setHeader('Content-Type', 'application/json');
     res.send({ base64: imagen.toString('base64') });
   });
