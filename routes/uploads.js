@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const UploadsController = require('../controllers/uploadsController');
+const verificarToken = require('../token'); // Importa directamente la función
 
 const fs = require('fs');
 if (!fs.existsSync('uploads')) {
@@ -24,5 +25,9 @@ router.post('/subir', upload.single('archivo'), UploadsController.uploadFiles);
 
 // Ruta para recuperar imágenes
 router.get('/:id_nota', UploadsController.obtenerImagen);
+router.post('/FotoPerfil', verificarToken, upload.single('archivo'), UploadsController.subirFotoPerfil);
+
+// Endpoint para subir fotos de profesionales
+router.post('/profesionales/foto', upload.single('imagen'), UploadsController.subirFotoProfesional);
 
 module.exports = router;

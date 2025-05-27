@@ -1,12 +1,12 @@
 const { obtenerPerfil, updateUser, eliminarCuenta, obtenerDatosAfiliado } = require('../models/usersModel');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'yourSecretKey';
+const JWT_SECRET = process.env.JWT_SECRET ;
 
-// Controlador para obtener el perfil del usuario
+
 const getProfile = (req, res) => {
-  console.log('Datos del usuario en req.user:', req.user); // Depuración
-  const id_usuario = req.user?.id;
+    const id_usuario = req.user.id; 
+  console.log('Datos del usuario en req.user:', req.user);
 
   if (!id_usuario) {
     return res.status(400).json({ mensaje: 'No se pudo identificar al usuario' });
@@ -26,13 +26,13 @@ const getProfile = (req, res) => {
   });
 };
 
-// Controlador para actualizar el perfil del usuario
-const updateProfile = (req, res) => {
-  const id_usuario = req.user.id; // Cambiado a `req.user.id`
-  const { nombre, apellido, email } = req.body;
-  console.log('Datos para actualizar el perfil:', { nombre, apellido, email }); // Depuración 
 
-  updateUser(id_usuario, { nombre, apellido, email }, (err, usuarioActualizado) => {
+const updateProfile = (req, res) => {
+  const id_usuario = req.user.id;
+  const userData = req.body;
+  console.log('Datos para actualizar el perfil:', userData);
+
+  updateUser(id_usuario, userData, (err, usuarioActualizado) => {
     if (err) {
       console.error('Error al actualizar el perfil:', err);
       return res.status(500).json({ mensaje: 'Error interno' });
@@ -46,9 +46,9 @@ const updateProfile = (req, res) => {
   });
 };
 
-// Controlador para eliminar la cuenta del usuario
+
 const deleteAccount = (req, res) => {
-  const id_usuario = req.user.id; // Cambiado a `req.user.id`
+  const id_usuario = req.user.id;
 
   eliminarCuenta(id_usuario, (err) => {
     if (err) {
@@ -60,9 +60,9 @@ const deleteAccount = (req, res) => {
   });
 };
 
-// Controlador para obtener los datos del afiliado (obra social)
+
 const getAfiliado = (req, res) => {
-  const id_usuario = req.user.id; // Cambiado a `req.user.id`
+  const id_usuario = req.user.id; 
 
   obtenerDatosAfiliado(id_usuario, (err, datosAfiliado) => {
     if (err) {
@@ -72,7 +72,7 @@ const getAfiliado = (req, res) => {
 
     if (!datosAfiliado) {
       return res.status(404).json({ mensaje: 'No se encontraron datos de afiliado' });
-    }
+    } 
 
     res.status(200).json(datosAfiliado);
   });
