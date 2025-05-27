@@ -46,9 +46,18 @@ const obtenerImagen = (req, res) => {
     }
 
     let imagen = results[0].imagenes;
+    // Si imagen es null o undefined, responde 404
+    if (!imagen) {
+      return res.status(404).json({ mensaje: 'Imagen no encontrada' });
+    }
     // Si viene como { type: 'Buffer', data: [...] }, conviértelo a Buffer real
     if (!Buffer.isBuffer(imagen) && imagen?.data) {
       imagen = Buffer.from(imagen.data);
+    }
+    // Si sigue sin ser buffer, responde error
+    if (!Buffer.isBuffer(imagen)) {
+      console.error('La imagen no es un buffer:', imagen);
+      return res.status(500).json({ mensaje: 'La imagen no es un buffer válido' });
     }
     res.setHeader('Content-Type', 'application/json');
     res.send({ base64: imagen.toString('base64') });
