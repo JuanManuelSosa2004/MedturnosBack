@@ -22,12 +22,16 @@ const upload = multer({ storage });
 
 // Ruta para subir imágenes
 router.post('/subir', upload.single('archivo'), UploadsController.uploadFiles);
+router.get('/perfil', verificarToken, UploadsController.obtenerFotoPerfil);
 
 // Ruta para recuperar imágenes
 router.get('/:id_nota', UploadsController.obtenerImagen);
 router.post('/FotoPerfil', verificarToken, upload.single('archivo'), UploadsController.subirFotoPerfil);
 
+
 // Endpoint para subir fotos de profesionales
 router.post('/profesionales/foto', upload.single('imagen'), UploadsController.subirFotoProfesional);
+router.get('/profesionales/foto/:id_profesional', UploadsController.obtenerFotoProfesional);
+
 
 module.exports = router;
