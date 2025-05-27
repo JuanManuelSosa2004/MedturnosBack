@@ -8,6 +8,7 @@ const obtenerTurnosRealizados = (id_usuario, callback) => {
       t.fecha,
       t.hora,
       p.nombre_profesional,
+      p.email, -- Agregado el email del médico
       p.ubicacion,
       p.diasTrabajo,
       e.descripcion AS especialidad
@@ -24,8 +25,8 @@ const obtenerTurnosRealizados = (id_usuario, callback) => {
     const turnos = resultados.map((turno) => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) //Se opto por string separado, json no andava
-        : [], 
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        : [], // Si es NULL, devolver un array vacío
     }));
 
     callback(null, turnos);
@@ -40,6 +41,7 @@ const obtenerTurnosCancelados = (id_usuario, callback) => {
       t.fecha,
       t.hora,
       p.nombre_profesional,
+      p.email, -- Agregado el email del médico
       p.ubicacion,
       p.diasTrabajo,
       e.descripcion AS especialidad
@@ -56,8 +58,8 @@ const obtenerTurnosCancelados = (id_usuario, callback) => {
     const turnos = resultados.map((turno) => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) 
-        : [], 
+        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        : [], // Si es NULL, devolver un array vacío
     }));
 
     callback(null, turnos);
@@ -72,6 +74,7 @@ const obtenerTurnosProgramados = (id_usuario, callback) => {
       t.fecha,
       t.hora,
       p.nombre_profesional,
+      p.email, -- Agregado el email del médico
       p.ubicacion,
       p.diasTrabajo,
       e.descripcion AS especialidad

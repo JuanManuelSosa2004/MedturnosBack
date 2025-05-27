@@ -38,9 +38,28 @@ const actualizarFotoPerfil = (id_usuario, filePath, callback) => {
   }
 };
 
+// Actualizar foto de profesional
+const actualizarFotoProfesional = (id_profesional, filePath, callback) => {
+  try {
+    const imagen = fs.readFileSync(filePath); // Leer el archivo como binario
+    const query = 'UPDATE profesionales SET imagen = ? WHERE id_profesional = ?';
+    db.query(query, [imagen, id_profesional], callback);
+  } catch (error) {
+    callback(error);
+  }
+};
+
+// Obtener foto de un profesional
+const obtenerFotoProfesional = (id_profesional, callback) => {
+  const query = 'SELECT imagen FROM profesionales WHERE id_profesional = ?';
+  db.query(query, [id_profesional], callback);
+};
+
 module.exports = {
   guardarArchivoNota,
   obtenerImagenNota,
   obtenerPerfilUsuario,
   actualizarFotoPerfil,
+  actualizarFotoProfesional,
+  obtenerFotoProfesional, // Nueva función exportada
 };

@@ -20,4 +20,9 @@ router.post('/subir', upload.single('archivo'), UploadsController.uploadFiles);
 
 // Ruta para recuperar imágenes
 router.get('/:id_nota', UploadsController.obtenerImagen);
-router.post('/FotoPerfil', verificarToken, upload.single('archivo'), UploadsController.subirFotoPerfil);module.exports = router;
+router.post('/FotoPerfil', verificarToken, upload.single('archivo'), UploadsController.subirFotoPerfil);
+
+// Endpoint para subir fotos de profesionales
+router.post('/profesionales/foto', upload.single('imagen'), UploadsController.subirFotoProfesional);
+
+module.exports = router;

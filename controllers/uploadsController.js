@@ -4,6 +4,7 @@ const {
   obtenerImagenNota,
   obtenerPerfilUsuario,
   actualizarFotoPerfil,
+  actualizarFotoProfesional,
 } = require('../models/uploadsModel');
 
 // Subir archivo
@@ -98,9 +99,58 @@ const subirFotoPerfil = (req, res) => {
   });
 };
 
+// Subir foto de profesional
+const subirFotoProfesional = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ mensaje: 'No se proporcionó ningún archivo' });
+  }
+
+  const { id_profesional } = req.body; // Obtener el ID del profesional desde el cuerpo de la solicitud
+  if (!id_profesional) {
+    return res.status(400).json({ mensaje: 'No se proporcionó el ID del profesional' });
+  }
+
+  actualizarFotoProfesional(id_profesional, req.file.path, (err, result) => {
+    fs.unlinkSync(req.file.path); // Eliminar el archivo temporal
+    if (err) {
+      console.error('Error al actualizar la foto del profesional:', err);
+      return res.status(500).json({ mensaje: 'Error interno al actualizar la foto del profesional' });
+    }
+    res.status(200).json({ mensaje: 'Foto del profesional actualizada con éxito' });
+  });
+};
+
+// Obtener foto de un profesional
+const obtenerFotoProfesional = (req, res) => {
+  const { id_profesional } = req.params; // Obtener el ID del profesional desde los parámetros de la URL
+
+  if (!id_profesional) {
+    return res.status(400).json({ mensaje: 'No se proporcionó el ID del profesional' });
+  }
+
+  obtenerFotoProfesional(id_profesional, (err, results) => {
+    if (err) {
+      console.error('Error al recuperar la foto del profesional:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    if (results.length === 0 || !results[0].imagen) {
+      return res.status(404).json({ mensaje: 'Foto del profesional no encontrada' });
+    }
+
+    const imagen = results[0].imagen;
+
+    // Configura el encabezado para enviar la imagen
+    res.setHeader('Content-Type', 'image/jpeg'); // Cambia el tipo MIME según el formato de la imagen
+    res.send(imagen); // Envía los datos binarios de la imagen
+  });
+};
+
 module.exports = {
   uploadFiles,
   obtenerImagen,
   obtenerFotoPerfil,
   subirFotoPerfil,
+  subirFotoProfesional,
+  obtenerFotoProfesional, // Nueva función exportada
 };
