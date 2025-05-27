@@ -47,9 +47,9 @@ const obtenerImagen = (req, res) => {
 
     const imagen = results[0].imagenes;
 
-    // Configura el encabezado para enviar la imagen
-    res.setHeader('Content-Type', 'image/webp'); // Cambia el tipo MIME según el formato de la imagen
-    res.send(imagen); // Envía los datos binarios de la imagen
+    // Devuelve la imagen como base64 en un JSON
+    res.setHeader('Content-Type', 'application/json');
+    res.send({ base64: imagen.toString('base64') });
   });
 };
 
