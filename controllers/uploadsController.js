@@ -74,7 +74,7 @@ const obtenerFotoPerfil = (req, res) => {
 
     const imagen = results[0].perfil;
     res.setHeader('Content-Type', 'image/webp'); // Cambia el tipo MIME según el formato de la imagen
-    res.sendFile(imagen, { root: '.' });
+    res.send(imagen);
   });
 };
 
