@@ -4,6 +4,7 @@ const {
   obtenerImagenNota,
   obtenerPerfilUsuario,
   actualizarFotoPerfil,
+  actualizarFotoProfesional,
 } = require('../models/uploadsModel');
 
 // Subir archivo
@@ -32,25 +33,39 @@ const uploadFiles = (req, res) => {
 
 // Recuperar imagen de nota médica
 const obtenerImagen = (req, res) => {
-  const { id_nota } = req.params; // Obtén el ID de la nota desde los parámetros de la URL
+  const { id_turno } = req.params;
 
-  obtenerImagenNota(id_nota, (err, results) => {
+  obtenerImagenNota(id_turno, (err, results) => {
     if (err) {
       console.error('Error al recuperar la imagen:', err);
       return res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 
-    if (results.length === 0) {
+    if (!results.length || !results[0].imagenes) {
       return res.status(404).json({ mensaje: 'Imagen no encontrada' });
     }
 
-    const imagen = results[0].imagenes;
+    let imagen = results[0].imagenes;
 
-    // Configura el encabezado para enviar la imagen
-    res.setHeader('Content-Type', 'image/webp'); // Cambia el tipo MIME según el formato de la imagen
-    res.send(imagen); // Envía los datos binarios de la imagen
+    // 🔍 Log de diagnóstico
+    console.log('Tipo recibido:', typeof imagen);
+    console.log('Instancia de Buffer:', Buffer.isBuffer(imagen));
+
+    // 👉 Reconstruir buffer si viene como { type: 'Buffer', data: [...] }
+    if (imagen && typeof imagen === 'object' && imagen.type === 'Buffer' && Array.isArray(imagen.data)) {
+      imagen = Buffer.from(imagen.data);
+    }
+
+    if (!Buffer.isBuffer(imagen)) {
+      console.error('La imagen no es un buffer válido:', imagen);
+      return res.status(500).json({ mensaje: 'La imagen no es un buffer válido' });
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.send({ base64: imagen.toString('base64') });
   });
 };
+
 
 // Recuperar foto de perfil usando el id del usuario autenticado (token)
 const obtenerFotoPerfil = (req, res) => {
@@ -72,13 +87,16 @@ const obtenerFotoPerfil = (req, res) => {
     }
 
     const imagen = results[0].perfil;
-    res.setHeader('Content-Type', 'image/webp'); // Cambia el tipo MIME según el formato de la imagen
-    res.send(imagen);
+res.setHeader('Content-Type', 'application/json');
+res.send({ base64: imagen.toString('base64') });
+
   });
 };
 
 // Subir foto de perfil usando el token
 const subirFotoPerfil = (req, res) => {
+    console.log('Archivo recibido en backend:', req.file); // <-- AGREGA ESTO
+
   if (!req.file) {
     return res.status(400).json({ mensaje: 'No se proporcionó ningún archivo' });
   }
@@ -98,9 +116,58 @@ const subirFotoPerfil = (req, res) => {
   });
 };
 
+// Subir foto de profesional
+const subirFotoProfesional = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ mensaje: 'No se proporcionó ningún archivo' });
+  }
+
+  const { id_profesional } = req.body; // Obtener el ID del profesional desde el cuerpo de la solicitud
+  if (!id_profesional) {
+    return res.status(400).json({ mensaje: 'No se proporcionó el ID del profesional' });
+  }
+
+  actualizarFotoProfesional(id_profesional, req.file.path, (err, result) => {
+    fs.unlinkSync(req.file.path); // Eliminar el archivo temporal
+    if (err) {
+      console.error('Error al actualizar la foto del profesional:', err);
+      return res.status(500).json({ mensaje: 'Error interno al actualizar la foto del profesional' });
+    }
+    res.status(200).json({ mensaje: 'Foto del profesional actualizada con éxito' });
+  });
+};
+
+// Obtener foto de un profesional
+const obtenerFotoProfesional = (req, res) => {
+  const { id_profesional } = req.params; // Obtener el ID del profesional desde los parámetros de la URL
+
+  if (!id_profesional) {
+    return res.status(400).json({ mensaje: 'No se proporcionó el ID del profesional' });
+  }
+
+  obtenerFotoProfesional(id_profesional, (err, results) => {
+    if (err) {
+      console.error('Error al recuperar la foto del profesional:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    if (results.length === 0 || !results[0].imagen) {
+      return res.status(404).json({ mensaje: 'Foto del profesional no encontrada' });
+    }
+
+    const imagen = results[0].imagen;
+
+    // Configura el encabezado para enviar la imagen
+    res.setHeader('Content-Type', 'image/jpeg'); // Cambia el tipo MIME según el formato de la imagen
+    res.send(imagen); // Envía los datos binarios de la imagen
+  });
+};
+
 module.exports = {
   uploadFiles,
   obtenerImagen,
   obtenerFotoPerfil,
   subirFotoPerfil,
+  subirFotoProfesional,
+  obtenerFotoProfesional, // Nueva función exportada
 };

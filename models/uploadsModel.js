@@ -16,9 +16,9 @@ const guardarArchivoNota = (id_turno, contenido, filePath, callback) => {
 };
 
 // Obtener imagen de nota médica
-const obtenerImagenNota = (id_nota, callback) => {
-  const query = 'SELECT imagenes FROM notasmedicas WHERE id_nota = ?';
-  db.query(query, [id_nota], callback);
+const obtenerImagenNota = (id_turno, callback) => {
+  const query = 'SELECT imagenes FROM notasmedicas WHERE id_turno = ?';
+  db.query(query, [id_turno], callback);
 };
 
 // Actualmente sin uso (Mantenido por si se necesita en el futuro)
@@ -38,9 +38,28 @@ const actualizarFotoPerfil = (id_usuario, filePath, callback) => {
   }
 };
 
+// Actualizar foto de profesional
+const actualizarFotoProfesional = (id_profesional, filePath, callback) => {
+  try {
+    const imagen = fs.readFileSync(filePath); // Leer el archivo como binario
+    const query = 'UPDATE profesionales SET imagen = ? WHERE id_profesional = ?';
+    db.query(query, [imagen, id_profesional], callback);
+  } catch (error) {
+    callback(error);
+  }
+};
+
+// Obtener foto de un profesional
+const obtenerFotoProfesional = (id_profesional, callback) => {
+  const query = 'SELECT imagen FROM profesionales WHERE id_profesional = ?';
+  db.query(query, [id_profesional], callback);
+};
+
 module.exports = {
   guardarArchivoNota,
   obtenerImagenNota,
   obtenerPerfilUsuario,
   actualizarFotoPerfil,
+  actualizarFotoProfesional,
+  obtenerFotoProfesional, // Nueva función exportada
 };
