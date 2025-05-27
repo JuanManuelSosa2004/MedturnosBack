@@ -41,28 +41,31 @@ const obtenerImagen = (req, res) => {
       return res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 
-    if (results.length === 0) {
+    if (!results.length || !results[0].imagenes) {
       return res.status(404).json({ mensaje: 'Imagen no encontrada' });
     }
 
     let imagen = results[0].imagenes;
-    // Si imagen es null o undefined, responde 404
-    if (!imagen) {
-      return res.status(404).json({ mensaje: 'Imagen no encontrada' });
-    }
-    // Si viene como { type: 'Buffer', data: [...] }, conviértelo a Buffer real
-    if (!Buffer.isBuffer(imagen) && imagen?.data) {
+
+    // 🔍 Log de diagnóstico
+    console.log('Tipo recibido:', typeof imagen);
+    console.log('Instancia de Buffer:', Buffer.isBuffer(imagen));
+
+    // 👉 Reconstruir buffer si viene como { type: 'Buffer', data: [...] }
+    if (imagen && typeof imagen === 'object' && imagen.type === 'Buffer' && Array.isArray(imagen.data)) {
       imagen = Buffer.from(imagen.data);
     }
-    // Si sigue sin ser buffer, responde error
+
     if (!Buffer.isBuffer(imagen)) {
-      console.error('La imagen no es un buffer:', imagen);
+      console.error('La imagen no es un buffer válido:', imagen);
       return res.status(500).json({ mensaje: 'La imagen no es un buffer válido' });
     }
+
     res.setHeader('Content-Type', 'application/json');
     res.send({ base64: imagen.toString('base64') });
   });
 };
+
 
 // Recuperar foto de perfil usando el id del usuario autenticado (token)
 const obtenerFotoPerfil = (req, res) => {
