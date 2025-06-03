@@ -4,9 +4,11 @@ const {
   getByProfesional,
   reservarTurno,
   cancelarTurno,
+  getTurnosPorFecha,
+  getTurnosPorFechaYProfesional,
 } = require('../models/turnosModel');
 
-// GET /turnos/disponibles
+
 const turnosDisponibles = (req, res) => {
   getDisponibles((err, turnos) => {
     if (err) {
@@ -17,7 +19,6 @@ const turnosDisponibles = (req, res) => {
   });
 };
 
-// GET /turnos/disponibles/especialidad/:especialidad
 const turnosPorEspecialidad = (req, res) => {
   const { especialidad } = req.params;
   getByEspecialidad(especialidad, (err, turnos) => {
@@ -29,7 +30,7 @@ const turnosPorEspecialidad = (req, res) => {
   });
 };
 
-// GET /turnos/disponibles/profesional/:profesional_id
+
 const turnosPorProfesional = (req, res) => {
   const { profesional_id } = req.params;
   getByProfesional(profesional_id, (err, turnos) => {
@@ -41,7 +42,7 @@ const turnosPorProfesional = (req, res) => {
   });
 };
 
-// POST /turnos/:id/reservar
+
 const reservar = (req, res) => {
   const { id } = req.params;
   const { usuario_id } = req.body;
@@ -58,7 +59,7 @@ const reservar = (req, res) => {
   });
 };
 
-// DELETE /turnos/:id
+
 const cancelar = (req, res) => {
   const { id } = req.params;
 
@@ -74,10 +75,48 @@ const cancelar = (req, res) => {
   });
 };
 
+
+const obtenerTurnosPorFecha = (req, res) => {
+  const { fecha } = req.params;
+
+  if (!fecha) {
+    return res.status(400).json({ mensaje: 'No se proporcionó la fecha' });
+  }
+
+  getTurnosPorFecha(fecha, (err, turnos) => {
+    if (err) {
+      console.error('Error al obtener los turnos por fecha:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    res.status(200).json(turnos);
+  });
+};
+
+const obtenerTurnosPorFechaYProfesional = (req, res) => {
+  const { profesional_id } = req.params;
+  const { fecha } = req.query;
+
+  if (!profesional_id || !fecha) {
+    return res.status(400).json({ mensaje: 'No se proporcionaron todos los parámetros requeridos' });
+  }
+
+  getTurnosPorFechaYProfesional(profesional_id, fecha, (err, turnos) => {
+    if (err) {
+      console.error('Error al obtener los turnos por fecha y profesional:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    res.status(200).json(turnos);
+  });
+};
+
 module.exports = {
   turnosDisponibles,
   turnosPorEspecialidad,
   turnosPorProfesional,
+  obtenerTurnosPorFecha,
+  obtenerTurnosPorFechaYProfesional,
   reservar,
   cancelar,
 };

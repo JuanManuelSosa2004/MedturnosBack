@@ -6,6 +6,8 @@ const TurnosController = require('../controllers/turnosController');
 router.get('/disponibles', TurnosController.turnosDisponibles);
 router.get('/disponibles/especialidad/:especialidad', TurnosController.turnosPorEspecialidad);
 router.get('/disponibles/profesional/:profesional_id', TurnosController.turnosPorProfesional);
+router.get('/turnos/fecha/:fecha', TurnosController.obtenerTurnosPorFecha);
+router.get('/profesionales/:profesional_id/turnos', TurnosController.obtenerTurnosPorFechaYProfesional);
 
 // accion
 router.post('/:id/reservar', TurnosController.reservar);
