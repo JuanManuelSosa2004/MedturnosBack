@@ -102,13 +102,13 @@ const getByProfesional = (id_profesional, callback) => {
   });
 };
 
-const reservarTurno = (turno_id, usuario_id, callback) => {
+const reservarTurno = (turno_id, id_usuario, callback) => {
   const query = `
     UPDATE turnos
     SET id_usuario = ?, disponibilidad = 'reservado'
     WHERE id_turno = ? AND disponibilidad = 'disponible'
   `;
-  db.query(query, [usuario_id, turno_id], (err, resultado) => {
+  db.query(query, [id_usuario, turno_id], (err, resultado) => {
     if (err) return callback(err);
     callback(null, resultado);
   });

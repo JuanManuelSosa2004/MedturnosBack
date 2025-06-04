@@ -44,17 +44,26 @@ const turnosPorProfesional = (req, res) => {
 
 
 const reservar = (req, res) => {
-  const { id } = req.params;
-  const { usuario_id } = req.body;
+  const { id } = req.params; // ID del turno
+  const { id_usuario } = req.body; // Cambia a id_usuario para coincidir con el JSON enviado
 
-  reservarTurno(id, usuario_id, (err, resultado) => {
+  console.log('ID del turno:', id); // Log para verificar el ID del turno
+  console.log('ID del usuario:', id_usuario); // Log para verificar el ID del usuario
+
+  if (!id_usuario) {
+    return res.status(400).json({ mensaje: 'El ID del usuario es obligatorio' });
+  }
+
+  reservarTurno(id, id_usuario, (err, resultado) => {
     if (err) {
       console.error('Error al reservar el turno:', err);
       return res.status(500).json({ mensaje: 'Error interno al reservar el turno' });
     }
+
     if (resultado.affectedRows === 0) {
       return res.status(404).json({ mensaje: 'El turno no está disponible o no existe' });
     }
+
     res.status(200).json({ mensaje: 'Turno reservado con éxito' });
   });
 };
