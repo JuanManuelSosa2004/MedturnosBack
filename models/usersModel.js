@@ -44,7 +44,7 @@ const eliminarCuenta = (id_usuario, callback) => {
       db.query(queryAfiliado, [id_usuario], (err) => {
         if (err) return callback(err);
 
-        const queryUsuario = 'DELETE FROM usuarios WHERE id_usuario = ?';
+        const queryUsuario = 'delete from usuarios WHERE id_usuario = ?';//filling modificaciones
         db.query(queryUsuario, [id_usuario], (err, result) => {
           if (err) return callback(err);
           callback(null, result);
