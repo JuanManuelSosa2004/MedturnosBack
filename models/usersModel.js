@@ -29,15 +29,27 @@ const obtenerPerfil = (id_usuario, callback) => {
 
 
 const eliminarCuenta = (id_usuario, callback) => {
-  const queryAfiliado = 'DELETE FROM afiliado WHERE id_usuario = ?';
-  db.query(queryAfiliado, [id_usuario], (err) => {
+  const queryTurnos = 'UPDATE turnos SET id_usuario = NULL WHERE id_usuario = ?';
+  db.query(queryTurnos, [id_usuario], (err) => {
     if (err) return callback(err);
 
-    // Luego eliminar al usuario de la tabla usuarios
-    const queryUsuario = 'DELETE FROM usuarios WHERE id_usuario = ?';
-    db.query(queryUsuario, [id_usuario], (err, result) => {
+    const queryNotasMedicas = `
+      DELETE FROM notasmedicas
+      WHERE id_turno IN (SELECT id_turno FROM turnos WHERE id_usuario = ?)
+    `;
+    db.query(queryNotasMedicas, [id_usuario], (err) => {
       if (err) return callback(err);
-      callback(null, result);
+
+      const queryAfiliado = 'DELETE FROM afiliado WHERE id_usuario = ?';
+      db.query(queryAfiliado, [id_usuario], (err) => {
+        if (err) return callback(err);
+
+        const queryUsuario = 'delete from usuarios WHERE id_usuario = ?';//filling modificaciones
+        db.query(queryUsuario, [id_usuario], (err, result) => {
+          if (err) return callback(err);
+          callback(null, result);
+        });
+      });
     });
   });
 };

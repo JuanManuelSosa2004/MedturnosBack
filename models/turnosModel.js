@@ -102,13 +102,13 @@ const getByProfesional = (id_profesional, callback) => {
   });
 };
 
-const reservarTurno = (turno_id, usuario_id, callback) => {
+const reservarTurno = (turno_id, id_usuario, callback) => {
   const query = `
     UPDATE turnos
     SET id_usuario = ?, disponibilidad = 'reservado'
     WHERE id_turno = ? AND disponibilidad = 'disponible'
   `;
-  db.query(query, [usuario_id, turno_id], (err, resultado) => {
+  db.query(query, [id_usuario, turno_id], (err, resultado) => {
     if (err) return callback(err);
     callback(null, resultado);
   });
@@ -142,11 +142,43 @@ const marcarTurnosRealizadosAutomaticamente = (callback) => {
   });
 };
 
+const getTurnosPorFecha = (fecha, callback) => {
+  const query = `
+    SELECT 
+      t.id_turno,
+      t.hora
+    FROM turnos t
+    WHERE t.fecha = ? AND t.disponibilidad = 'disponible'
+    ORDER BY t.hora ASC
+  `;
+  db.query(query, [fecha], (err, resultados) => {
+    if (err) return callback(err);
+    callback(null, resultados);
+  });
+};
+
+const getTurnosPorFechaYProfesional = (id_profesional, fecha, callback) => {
+  const query = `
+    SELECT 
+      t.id_turno,
+      t.hora
+    FROM turnos t
+    WHERE t.id_profesional = ? AND t.fecha = ? AND t.disponibilidad = 'disponible'
+    ORDER BY t.hora ASC
+  `;
+  db.query(query, [id_profesional, fecha], (err, resultados) => {
+    if (err) return callback(err);
+    callback(null, resultados);
+  });
+};
+
 module.exports = {
   getDisponibles,
   getByEspecialidad,
   getByProfesional,
+  getTurnosPorFechaYProfesional, 
   reservarTurno,
   cancelarTurno,
   marcarTurnosRealizadosAutomaticamente,
+  getTurnosPorFecha,
 };
