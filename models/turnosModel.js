@@ -53,7 +53,7 @@ const getByEspecialidad = (id_especialidad, callback) => {
     FROM turnos t
     JOIN profesionales p ON t.id_profesional = p.id_profesional
     JOIN especialidad e ON t.id_especialidad = e.id_especialidad
-    WHERE t.disponibilidad = 'disponible' AND t.id_especialidad = ?
+    WHERE t.disponibilidad = 'available' AND t.id_especialidad = ?
   `;
   db.query(query, [id_especialidad], (err, resultados) => {
     if (err) return callback(err);
