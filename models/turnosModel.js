@@ -105,8 +105,8 @@ const getByProfesional = (id_profesional, callback) => {
 const reservarTurno = (turno_id, id_usuario, callback) => {
   const query = `
     UPDATE turnos
-    SET id_usuario = ?, disponibilidad = 'reservado'
-    WHERE id_turno = ? AND disponibilidad = 'disponible'
+    SET id_usuario = ?, disponibilidad = 'scheduled'
+    WHERE id_turno = ? AND disponibilidad = 'available'
   `;
   db.query(query, [id_usuario, turno_id], (err, resultado) => {
     if (err) return callback(err);
@@ -117,8 +117,8 @@ const reservarTurno = (turno_id, id_usuario, callback) => {
 const cancelarTurno = (turno_id, callback) => {
   const query = `
     UPDATE turnos
-    SET disponibilidad = 'cancelado'
-    WHERE id_turno = ? AND disponibilidad = 'reservado'
+    SET disponibilidad = 'Cancelled'
+    WHERE id_turno = ? AND disponibilidad = 'scheduled'
   `;
   db.query(query, [turno_id], (err, resultado) => {
     if (err) return callback(err);
@@ -129,8 +129,8 @@ const cancelarTurno = (turno_id, callback) => {
 const marcarTurnosRealizadosAutomaticamente = (callback) => {
   const query = `
     UPDATE turnos
-    SET disponibilidad = 'completado'
-    WHERE disponibilidad = 'reservado'
+    SET disponibilidad = 'completed'
+    WHERE disponibilidad = 'scheduled'
       AND (
         fecha < CURDATE()
         OR (fecha = CURDATE() AND hora <= CURTIME())
@@ -148,7 +148,7 @@ const getTurnosPorFecha = (fecha, callback) => {
       t.id_turno,
       t.hora
     FROM turnos t
-    WHERE t.fecha = ? AND t.disponibilidad = 'disponible'
+    WHERE t.fecha = ? AND t.disponibilidad = 'available'
     ORDER BY t.hora ASC
   `;
   db.query(query, [fecha], (err, resultados) => {
@@ -163,7 +163,7 @@ const getTurnosPorFechaYProfesional = (id_profesional, fecha, callback) => {
       t.id_turno,
       t.hora
     FROM turnos t
-    WHERE t.id_profesional = ? AND t.fecha = ? AND t.disponibilidad = 'disponible'
+    WHERE t.id_profesional = ? AND t.fecha = ? AND t.disponibilidad = 'available'
     ORDER BY t.hora ASC
   `;
   db.query(query, [id_profesional, fecha], (err, resultados) => {
