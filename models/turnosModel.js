@@ -53,7 +53,7 @@ const getByEspecialidad = (id_especialidad, callback) => {
     FROM turnos t
     JOIN profesionales p ON t.id_profesional = p.id_profesional
     JOIN especialidad e ON t.id_especialidad = e.id_especialidad
-    WHERE t.disponibilidad = 'disponible' AND t.id_especialidad = ?
+    WHERE t.disponibilidad = 'available' AND t.id_especialidad = ?
   `;
   db.query(query, [id_especialidad], (err, resultados) => {
     if (err) return callback(err);
@@ -80,13 +80,12 @@ const getByProfesional = (id_profesional, callback) => {
       t.id_usuario,
       t.id_especialidad,
       p.nombre_profesional AS nombre,
-      e.descripcion AS especialidad,
       p.ubicacion AS hospital,
       p.diasTrabajo
     FROM turnos t
     JOIN profesionales p ON t.id_profesional = p.id_profesional
-    JOIN especialidad e ON t.id_especialidad = e.id_especialidad
-    WHERE t.disponibilidad = 'disponible' AND t.id_profesional = ?
+    WHERE t.disponibilidad = 'available' AND t.id_profesional = ?
+    ORDER BY t.fecha ASC, t.hora ASC
   `;
   db.query(query, [id_profesional], (err, resultados) => {
     if (err) return callback(err);

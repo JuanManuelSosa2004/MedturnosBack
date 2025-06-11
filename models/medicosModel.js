@@ -40,14 +40,13 @@ const obtenerMedicoPorId = (id, callback) => {
   });
 };
 
-const obtenerMedicosPorEspecialidad = (especialidad, callback) => {
+const obtenerMedicosPorEspecialidad = (id_especialidad, callback) => {
   const query = `
-    SELECT p.id_profesional, p.nombre_profesional, p.email, p.ubicacion, e.descripcion AS especialidad, p.diasTrabajo
+    SELECT p.id_profesional, p.nombre_profesional, p.email, p.ubicacion, p.diasTrabajo
     FROM profesionales p
-    JOIN especialidad e ON p.id_especialidad = e.id_especialidad
-    WHERE e.descripcion = ?
+    WHERE p.id_especialidad = ?
   `;
-  db.query(query, [especialidad], (err, results) => {
+  db.query(query, [id_especialidad], (err, results) => {
     if (err) return callback(err);
 
     const medicos = results.map((medico) => ({

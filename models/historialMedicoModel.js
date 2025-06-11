@@ -16,7 +16,7 @@ const obtenerTurnosRealizados = (id_usuario, callback) => {
     JOIN profesionales p ON t.id_profesional = p.id_profesional
     JOIN especialidad e ON p.id_especialidad = e.id_especialidad
     WHERE t.id_usuario = ?
-      AND t.disponibilidad = 'realizado'
+      AND t.disponibilidad = 'completed'
     ORDER BY t.fecha DESC, t.hora DESC
   `;
   db.query(query, [id_usuario], (err, resultados) => {
@@ -47,7 +47,7 @@ const obtenerTurnosCancelados = (id_usuario, callback) => {
     JOIN profesionales p ON t.id_profesional = p.id_profesional
     JOIN especialidad e ON p.id_especialidad = e.id_especialidad
     WHERE t.id_usuario = ?
-      AND t.disponibilidad = 'cancelado'
+      AND t.disponibilidad = 'Cancelled'
     ORDER BY t.fecha DESC, t.hora DESC
   `;
   db.query(query, [id_usuario], (err, resultados) => {
@@ -78,7 +78,7 @@ const obtenerTurnosProgramados = (id_usuario, callback) => {
     JOIN profesionales p ON t.id_profesional = p.id_profesional
     JOIN especialidad e ON p.id_especialidad = e.id_especialidad
     WHERE t.id_usuario = ?
-      AND t.disponibilidad = 'reservado'
+      AND t.disponibilidad = 'scheduled'
     ORDER BY t.fecha ASC, t.hora ASC
   `;
   db.query(query, [id_usuario], (err, resultados) => {
