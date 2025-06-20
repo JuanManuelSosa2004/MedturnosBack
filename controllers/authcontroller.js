@@ -16,8 +16,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 const login = (req, res) => {
   const { email, contrasena } = req.body;
 
-  // Verifica las credenciales del usuario
-  obtenerUsuarioLogeo([email, contrasena], (err, usuario) => {
+  buscarUsuarioPorEmail(email, (err, usuario) => {
     if (err) {
       return res.status(500).json({ mensaje: 'Error al verificar usuario' });
     }
@@ -26,21 +25,23 @@ const login = (req, res) => {
       return res.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
 
-    // Aquí podrías usar bcrypt para comparar contraseñas en lugar de texto claro
-    // bcrypt.compare(contrasena, usuario.contrasena, (err, result) => {
-    //   if (!result) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-    // });
+    // Compara la contraseña encriptada
+    bcrypt.compare(contrasena, usuario.contrasena, (err, result) => {
+      if (err || !result) {
+        return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+      }
 
-    // Genera el JWT
-    const token = jwt.sign(
-      { id: usuario.id_usuario, email: usuario.email, nombre: usuario.nombre },
-      SECRET_KEY,
-      { expiresIn: '1h' } 
-    );
+      // Genera el JWT
+      const token = jwt.sign(
+        { id: usuario.id_usuario, email: usuario.email, nombre: usuario.nombre },
+        SECRET_KEY,
+        { expiresIn: '1h' }
+      );
 
-    return res.status(200).json({
-      mensaje: 'Inicio de sesión exitoso',
-      token, 
+      return res.status(200).json({
+        mensaje: 'Inicio de sesión exitoso',
+        token,
+      });
     });
   });
 };
@@ -58,15 +59,22 @@ const registro = (req, res) => {
       return res.status(409).json({ mensaje: 'El email ya está registrado' });
     }
 
-    // Si no existe, registrar al usuario
-    registrarUsuario([nombre, apellido, email, contrasena, nombre_obra, plan], (err, resultado) => {
+    // Encripta la contraseña antes de guardar
+    bcrypt.hash(contrasena, 10, (err, hash) => {
       if (err) {
-        console.error('Error al registrar usuario:', err);
+        console.error('Error al encriptar contraseña:', err);
         return res.status(500).json({ mensaje: 'Error interno al registrar el usuario' });
       }
 
-      console.log('Registro exitoso en controller:', resultado);
-      return res.status(201).json({ mensaje: 'Usuario registrado con éxito', resultado });
+      registrarUsuario([nombre, apellido, email, hash, nombre_obra, plan], (err, resultado) => {
+        if (err) {
+          console.error('Error al registrar usuario:', err);
+          return res.status(500).json({ mensaje: 'Error interno al registrar el usuario' });
+        }
+
+        console.log('Registro exitoso en controller:', resultado);
+        return res.status(201).json({ mensaje: 'Usuario registrado con éxito', resultado });
+      });
     });
   });
 };
@@ -107,9 +115,14 @@ const resetearContrasena = (req, res) => {
     if (err) return res.status(500).json({ mensaje: 'Error interno' });
     if (!usuario) return res.status(400).json({ mensaje: 'Código inválido o expirado' });
 
-    cambiarContrasenaConToken(token, nuevaContrasena, err => {
-      if (err) return res.status(500).json({ mensaje: 'Error al cambiar la contraseña' });
-      res.status(200).json({ mensaje: 'Contraseña cambiada con éxito' });
+    // Encripta la nueva contraseña antes de guardar
+    bcrypt.hash(nuevaContrasena, 10, (err, hash) => {
+      if (err) return res.status(500).json({ mensaje: 'Error al encriptar contraseña' });
+
+      cambiarContrasenaConToken(token, hash, err => {
+        if (err) return res.status(500).json({ mensaje: 'Error al cambiar la contraseña' });
+        res.status(200).json({ mensaje: 'Contraseña cambiada con éxito' });
+      });
     });
   });
 };
