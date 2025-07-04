@@ -7,20 +7,20 @@ let notificacionesEnviadas = 0;
 
 // Función para verificar y enviar notificaciones
 const verificarYEnviarNotificaciones = () => {
-  console.log('🔍 Verificando turnos para notificar...');
+  console.log('Verificando turnos para notificar...');
 
   getTurnosParaNotificar((err, turnos) => {
     if (err) {
-      console.error('❌ Error al obtener turnos para notificar:', err);
+      console.error('Error al obtener turnos para notificar:', err);
       return;
     }
 
     if (turnos.length === 0) {
-      console.log('✅ No hay turnos que requieran notificación en este momento');
+      console.log('No hay turnos que requieran notificación en este momento');
       return;
     }
 
-    console.log(`📋 Se encontraron ${turnos.length} turno(s) para notificar`);
+    console.log(`Se encontraron ${turnos.length} turno(s) para notificar`);
 
     // Procesar cada turno
     turnos.forEach(turno => {
@@ -37,17 +37,17 @@ const verificarYEnviarNotificaciones = () => {
       // Enviar notificación por email
       enviarNotificacionTurno(turno.email, datosTurno, (emailErr, info) => {
         if (emailErr) {
-          console.error(`❌ Error al enviar email a ${turno.email}:`, emailErr);
+          console.error(`Error al enviar email a ${turno.email}:`, emailErr);
         } else {
-          console.log(`✅ Notificación enviada a ${turno.nombre} ${turno.apellido} (${turno.email})`);
+          console.log(`Notificación enviada a ${turno.nombre} ${turno.apellido} (${turno.email})`);
           notificacionesEnviadas++;
 
           // Marcar el turno como notificado
           marcarTurnoNotificado(turno.id_turno, markErr => {
             if (markErr) {
-              console.error(`❌ Error al marcar turno ${turno.id_turno} como notificado:`, markErr);
+              console.error(`Error al marcar turno ${turno.id_turno} como notificado:`, markErr);
             } else {
-              console.log(`✅ Turno ${turno.id_turno} marcado como notificado`);
+              console.log(`Turno ${turno.id_turno} marcado como notificado`);
             }
           });
         }
@@ -60,7 +60,7 @@ const verificarYEnviarNotificaciones = () => {
 cron.schedule(
   '* * * * *',
   () => {
-    console.log(`⏰ ${new Date().toLocaleString('es-AR')} - Verificando turnos cada minuto...`);
+    console.log(`${new Date().toLocaleString('es-AR')} - Verificando turnos cada minuto...`);
     verificarYEnviarNotificaciones();
   },
   {
@@ -73,7 +73,7 @@ cron.schedule(
 cron.schedule(
   '0 * * * *',
   () => {
-    console.log(`📊 Estado del sistema - Notificaciones enviadas: ${notificacionesEnviadas}`);
+    console.log(`Estado del sistema - Notificaciones enviadas: ${notificacionesEnviadas}`);
   },
   {
     scheduled: true,
@@ -86,4 +86,4 @@ module.exports = {
   verificarYEnviarNotificaciones,
 };
 
-console.log('📧 Sistema de notificaciones iniciado - Se ejecuta cada 1 minuto');
+console.log('Sistema de notificaciones iniciado - Se ejecuta cada 1 minuto');
