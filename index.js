@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const dotenv=require('dotenv').config();
+const dotenv = require('dotenv').config();
 
 //const { swaggerUi, swaggerDocs } = require('./config/swagger');
 app.use(express.json());
@@ -18,8 +18,14 @@ app.use('/medicos', require('./routes/medicosRoutes'));
 app.use('/turnos', require('./routes/turnosRoutes'));
 app.use('/Historial-Medico', require('./routes/historialMedicoRoutes'));
 app.use('/uploads', require('./routes/uploads'));
+app.use('/notificaciones', require('./routes/notificacionesRoutes'));
+app.use('/notificaciones', require('./routes/notificacionesRoutes'));
+
+// Inicializar sistema de notificaciones
+const notificaciones = require('./controllers/Notificaciones/notif');
 
 app.listen(PORT, () => {
   //  console.log(`Server running on port ${PORT}`);
   console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
-}); 
+  console.log('📧 Sistema de notificaciones de turnos inicializado automáticamente');
+});
