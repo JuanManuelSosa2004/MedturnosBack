@@ -2,9 +2,6 @@ const cron = require('node-cron');
 const { getTurnosParaNotificar, marcarTurnoNotificado } = require('../../models/turnosModel');
 const { enviarNotificacionTurno } = require('../../emailService');
 
-// Variable para contar notificaciones enviadas
-let notificacionesEnviadas = 0;
-
 // Función para verificar y enviar notificaciones
 const verificarYEnviarNotificaciones = () => {
   console.log('Verificando turnos para notificar...');
@@ -40,7 +37,6 @@ const verificarYEnviarNotificaciones = () => {
           console.error(`Error al enviar email a ${turno.email}:`, emailErr);
         } else {
           console.log(`Notificación enviada a ${turno.nombre} ${turno.apellido} (${turno.email})`);
-          notificacionesEnviadas++;
 
           // Marcar el turno como notificado
           marcarTurnoNotificado(turno.id_turno, markErr => {
@@ -56,24 +52,12 @@ const verificarYEnviarNotificaciones = () => {
   });
 };
 
-// Cron job que se ejecuta cada 1 minuto para verificar turnos
+// Cron job que se ejecuta cada 30 minutos para verificar turnos
 cron.schedule(
-  '* * * * *',
+  '0,30 * * * *',
   () => {
-    console.log(`${new Date().toLocaleString('es-AR')} - Verificando turnos cada minuto...`);
+    console.log(`${new Date().toLocaleString('es-AR')} - Verificando turnos cada 30 minutos...`);
     verificarYEnviarNotificaciones();
-  },
-  {
-    scheduled: true,
-    timezone: 'America/Argentina/Buenos_Aires',
-  }
-);
-
-// Log del estado cada hora
-cron.schedule(
-  '0 * * * *',
-  () => {
-    console.log(`Estado del sistema - Notificaciones enviadas: ${notificacionesEnviadas}`);
   },
   {
     scheduled: true,
@@ -86,4 +70,4 @@ module.exports = {
   verificarYEnviarNotificaciones,
 };
 
-console.log('Sistema de notificaciones iniciado - Se ejecuta cada 1 minuto');
+console.log('Sistema de notificaciones iniciado - Se ejecuta cada 30 minutos');

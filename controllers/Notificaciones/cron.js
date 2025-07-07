@@ -2,9 +2,6 @@ const cron = require('node-cron');
 const { getTurnosParaNotificar, marcarTurnoNotificado } = require('../../models/turnosModel');
 const { enviarNotificacionTurno } = require('../../emailService');
 
-// Variables del sistema
-let notificacionesEnviadas = 0;
-
 // Función para verificar y enviar notificaciones
 const verificarYEnviarNotificaciones = () => {
   console.log('Verificando turnos para notificar...');
@@ -40,7 +37,6 @@ const verificarYEnviarNotificaciones = () => {
           console.error(`Error al enviar email a ${turno.email}:`, emailErr);
         } else {
           console.log(`Notificación enviada a ${turno.nombre} ${turno.apellido} (${turno.email})`);
-          notificacionesEnviadas++;
 
           // Marcar el turno como notificado
           marcarTurnoNotificado(turno.id_turno, markErr => {
