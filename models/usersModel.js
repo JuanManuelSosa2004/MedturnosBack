@@ -35,7 +35,9 @@ const eliminarCuenta = (id_usuario, callback) => {
 
     const queryNotasMedicas = `
       DELETE FROM notasmedicas
-      WHERE id_turno IN (SELECT id_turno FROM turnos WHERE id_usuario = ?)
+      WHERE id_turno IN (
+        SELECT id_turno FROM turnos WHERE id_usuario IS NULL
+      )
     `;
     db.query(queryNotasMedicas, [id_usuario], (err) => {
       if (err) return callback(err);
@@ -44,7 +46,7 @@ const eliminarCuenta = (id_usuario, callback) => {
       db.query(queryAfiliado, [id_usuario], (err) => {
         if (err) return callback(err);
 
-        const queryUsuario = 'delete from usuarios WHERE id_usuario = ?';//filling modificaciones
+        const queryUsuario = 'DELETE FROM usuarios WHERE id_usuario = ?';
         db.query(queryUsuario, [id_usuario], (err, result) => {
           if (err) return callback(err);
           callback(null, result);
