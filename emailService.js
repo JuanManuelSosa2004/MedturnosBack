@@ -57,7 +57,7 @@ const enviarNotificacionTurno = (to, datosTurno, callback) => {
                 🕐 <strong>Hora:</strong> ${hora}
               </li>
               <li style="margin-bottom: 10px;">
-                👨‍⚕️ <strong>Profesional:</strong> Dr/a. ${nombre_profesional}
+                👨‍⚕️ <strong>Profesional:</strong> ${nombre_profesional}
               </li>
               <li style="margin-bottom: 10px;">
                 🏥 <strong>Especialidad:</strong> ${especialidad}
