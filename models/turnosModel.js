@@ -1,6 +1,6 @@
 const db = require('../config/db');
 
-const getDisponibles = (callback) => {
+const getDisponibles = callback => {
   const query = `
     SELECT 
       t.id_turno,
@@ -25,10 +25,10 @@ const getDisponibles = (callback) => {
       return callback(err);
     }
 
-    const turnos = resultados.map((turno) => ({
+    const turnos = resultados.map(turno => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        ? turno.diasTrabajo.split(',').map(dia => dia.trim()) // Convertir string separado por comas a array
         : [], // Si es NULL, devolver un array vacío
     }));
 
@@ -58,10 +58,10 @@ const getByEspecialidad = (id_especialidad, callback) => {
   db.query(query, [id_especialidad], (err, resultados) => {
     if (err) return callback(err);
 
-    const turnos = resultados.map((turno) => ({
+    const turnos = resultados.map(turno => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        ? turno.diasTrabajo.split(',').map(dia => dia.trim()) // Convertir string separado por comas a array
         : [], // Si es NULL, devolver un array vacío
     }));
 
@@ -90,10 +90,10 @@ const getByProfesional = (id_profesional, callback) => {
   db.query(query, [id_profesional], (err, resultados) => {
     if (err) return callback(err);
 
-    const turnos = resultados.map((turno) => ({
+    const turnos = resultados.map(turno => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map((dia) => dia.trim()) // Convertir string separado por comas a array
+        ? turno.diasTrabajo.split(',').map(dia => dia.trim()) // Convertir string separado por comas a array
         : [], // Si es NULL, devolver un array vacío
     }));
 
@@ -125,7 +125,7 @@ const cancelarTurno = (turno_id, callback) => {
   });
 };
 
-const marcarTurnosRealizadosAutomaticamente = (callback) => {
+const marcarTurnosRealizadosAutomaticamente = callback => {
   const query = `
     UPDATE turnos
     SET disponibilidad = 'completed'
@@ -171,13 +171,55 @@ const getTurnosPorFechaYProfesional = (id_profesional, fecha, callback) => {
   });
 };
 
+const getTurnosParaNotificar = callback => {
+  const query = `
+    SELECT 
+      t.id_turno,
+      t.fecha,
+      t.hora,
+      t.id_usuario,
+      u.nombre,
+      u.apellido,
+      u.email,
+      p.nombre_profesional,
+      e.descripcion AS especialidad,
+      p.ubicacion AS hospital
+    FROM turnos t
+    JOIN usuarios u ON t.id_usuario = u.id_usuario
+    JOIN profesionales p ON t.id_profesional = p.id_profesional
+    JOIN especialidad e ON t.id_especialidad = e.id_especialidad
+    WHERE t.disponibilidad = 'scheduled'
+      AND (t.notificado IS NULL OR t.notificado = 0)
+      AND TIMESTAMPDIFF(HOUR, NOW(), CONCAT(t.fecha, ' ', t.hora)) <= 24
+      AND TIMESTAMPDIFF(HOUR, NOW(), CONCAT(t.fecha, ' ', t.hora)) > 0
+  `;
+  db.query(query, (err, resultados) => {
+    if (err) return callback(err);
+    callback(null, resultados);
+  });
+};
+
+const marcarTurnoNotificado = (id_turno, callback) => {
+  const query = `
+    UPDATE turnos 
+    SET notificado = 1 
+    WHERE id_turno = ?
+  `;
+  db.query(query, [id_turno], (err, resultado) => {
+    if (err) return callback(err);
+    callback(null, resultado);
+  });
+};
+
 module.exports = {
   getDisponibles,
   getByEspecialidad,
   getByProfesional,
-  getTurnosPorFechaYProfesional, 
+  getTurnosPorFechaYProfesional,
   reservarTurno,
   cancelarTurno,
   marcarTurnosRealizadosAutomaticamente,
   getTurnosPorFecha,
+  getTurnosParaNotificar,
+  marcarTurnoNotificado,
 };
