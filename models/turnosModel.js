@@ -28,8 +28,8 @@ const getDisponibles = callback => {
     const turnos = resultados.map(turno => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map(dia => dia.trim()) // Convertir string separado por comas a array
-        : [], // Si es NULL, devolver un array vacío
+        ? turno.diasTrabajo.split(',').map(dia => dia.trim())
+        : [],
     }));
 
     callback(null, turnos);
@@ -61,8 +61,8 @@ const getByEspecialidad = (id_especialidad, callback) => {
     const turnos = resultados.map(turno => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map(dia => dia.trim()) // Convertir string separado por comas a array
-        : [], // Si es NULL, devolver un array vacío
+        ? turno.diasTrabajo.split(',').map(dia => dia.trim())
+        : [],
     }));
 
     callback(null, turnos);
@@ -93,8 +93,8 @@ const getByProfesional = (id_profesional, callback) => {
     const turnos = resultados.map(turno => ({
       ...turno,
       diasTrabajo: turno.diasTrabajo
-        ? turno.diasTrabajo.split(',').map(dia => dia.trim()) // Convertir string separado por comas a array
-        : [], // Si es NULL, devolver un array vacío
+        ? turno.diasTrabajo.split(',').map(dia => dia.trim())
+        : [],
     }));
 
     callback(null, turnos);
@@ -130,6 +130,22 @@ const marcarTurnosRealizadosAutomaticamente = callback => {
     UPDATE turnos
     SET disponibilidad = 'completed'
     WHERE disponibilidad = 'scheduled'
+      AND (
+        fecha < CURDATE()
+        OR (fecha = CURDATE() AND hora <= CURTIME())
+      )
+  `;
+  db.query(query, (err, resultado) => {
+    if (err) return callback(err);
+    callback(null, resultado);
+  });
+};
+
+const cancelarTurnosDisponiblesVencidos = callback => {
+  const query = `
+    UPDATE turnos
+    SET disponibilidad = 'Cancelled'
+    WHERE disponibilidad = 'available'
       AND (
         fecha < CURDATE()
         OR (fecha = CURDATE() AND hora <= CURTIME())
@@ -219,6 +235,7 @@ module.exports = {
   reservarTurno,
   cancelarTurno,
   marcarTurnosRealizadosAutomaticamente,
+  cancelarTurnosDisponiblesVencidos,
   getTurnosPorFecha,
   getTurnosParaNotificar,
   marcarTurnoNotificado,

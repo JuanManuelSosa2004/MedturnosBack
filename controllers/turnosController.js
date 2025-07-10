@@ -1,3 +1,4 @@
+const cron = require('node-cron');
 const {
   getDisponibles,
   getByEspecialidad,
@@ -6,6 +7,8 @@ const {
   cancelarTurno,
   getTurnosPorFecha,
   getTurnosPorFechaYProfesional,
+  marcarTurnosRealizadosAutomaticamente,
+  cancelarTurnosDisponiblesVencidos,
 } = require('../models/turnosModel');
 
 
@@ -42,6 +45,41 @@ const turnosPorProfesional = (req, res) => {
   });
 };
 
+
+const obtenerTurnosPorFecha = (req, res) => {
+  const { fecha } = req.params;
+
+  if (!fecha) {
+    return res.status(400).json({ mensaje: 'No se proporcionó la fecha' });
+  }
+
+  getTurnosPorFecha(fecha, (err, turnos) => {
+    if (err) {
+      console.error('Error al obtener los turnos por fecha:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    res.status(200).json(turnos);
+  });
+};
+
+const obtenerTurnosPorFechaYProfesional = (req, res) => {
+  const { profesional_id } = req.params;
+  const { fecha } = req.query;
+
+  if (!profesional_id || !fecha) {
+    return res.status(400).json({ mensaje: 'No se proporcionaron todos los parámetros requeridos' });
+  }
+
+  getTurnosPorFechaYProfesional(profesional_id, fecha, (err, turnos) => {
+    if (err) {
+      console.error('Error al obtener los turnos por fecha y profesional:', err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    res.status(200).json(turnos);
+  });
+};
 
 const reservar = (req, res) => {
   const { id } = req.params; // ID del turno
@@ -85,40 +123,30 @@ const cancelar = (req, res) => {
 };
 
 
-const obtenerTurnosPorFecha = (req, res) => {
-  const { fecha } = req.params;
-
-  if (!fecha) {
-    return res.status(400).json({ mensaje: 'No se proporcionó la fecha' });
-  }
-
-  getTurnosPorFecha(fecha, (err, turnos) => {
-    if (err) {
-      console.error('Error al obtener los turnos por fecha:', err);
-      return res.status(500).json({ mensaje: 'Error interno del servidor' });
-    }
-
-    res.status(200).json(turnos);
+const configurarMarcadoAutomatico = () => {
+  cron.schedule('0 2 */3 * *', () => {
+    marcarTurnosRealizadosAutomaticamente((err, resultado1) => {
+      if (err) {
+        console.error('Error en limpieza:', err.message);
+        return;
+      }
+      
+      cancelarTurnosDisponiblesVencidos((err, resultado2) => {
+        if (err) {
+          console.error('Error en limpieza:', err.message);
+        } else {
+          console.log('Realizada la limpieza de turnos');
+        }
+      });
+    });
   });
 };
 
-const obtenerTurnosPorFechaYProfesional = (req, res) => {
-  const { profesional_id } = req.params;
-  const { fecha } = req.query;
-
-  if (!profesional_id || !fecha) {
-    return res.status(400).json({ mensaje: 'No se proporcionaron todos los parámetros requeridos' });
-  }
-
-  getTurnosPorFechaYProfesional(profesional_id, fecha, (err, turnos) => {
-    if (err) {
-      console.error('Error al obtener los turnos por fecha y profesional:', err);
-      return res.status(500).json({ mensaje: 'Error interno del servidor' });
-    }
-
-    res.status(200).json(turnos);
-  });
+const inicializarProcesosAutomaticos = () => {
+  configurarMarcadoAutomatico();
 };
+
+inicializarProcesosAutomaticos();
 
 module.exports = {
   turnosDisponibles,
