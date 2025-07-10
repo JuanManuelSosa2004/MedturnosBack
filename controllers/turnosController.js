@@ -124,7 +124,8 @@ const cancelar = (req, res) => {
 
 
 const configurarMarcadoAutomatico = () => {
-  cron.schedule('0 2 */3 * *', () => {
+  // TEMPORAL: Ejecutar cada 5 minutos para testing
+  cron.schedule('*/5 * * * *', () => {
     marcarTurnosRealizadosAutomaticamente((err, resultado1) => {
       if (err) {
         console.error('Error en limpieza:', err.message);
@@ -143,6 +144,7 @@ const configurarMarcadoAutomatico = () => {
 };
 
 const inicializarProcesosAutomaticos = () => {
+  console.log('🧹 Limpieza automática de turnos configurada (TEST: cada 5 min)');
   configurarMarcadoAutomatico();
 };
 
